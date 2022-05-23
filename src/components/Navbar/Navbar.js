@@ -49,7 +49,7 @@ function Navbar() {
         {showNavbar && <>&nbsp;</>}
         {!showNavbar && (
           <motion.span
-            className="inline-block flex relative"
+            className="inline-block relative font-bold font-title text-2xl sm:text-2xl p-2 flex justify-center items-center"
             initial={{
               translateX: "10vw",
               opacity: 0.8,

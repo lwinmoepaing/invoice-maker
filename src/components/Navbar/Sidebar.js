@@ -59,7 +59,7 @@ function Sidebar() {
       >
         <div className="flex justify-between">
           <motion.span
-            className="font-bold text-2xl sm:text-3xl p-2 flex"
+            className="font-bold font-title text-2xl sm:text-2xl p-2 flex justify-center items-center"
             initial={{
               translateX: -300,
             }}

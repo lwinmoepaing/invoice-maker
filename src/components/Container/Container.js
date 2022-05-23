@@ -20,7 +20,7 @@ function Container({ children }) {
         }
       >
         <Navbar />
-        <div>{children}</div>
+        <div className="container mx-auto">{children}</div>
       </div>
     </div>
   );
