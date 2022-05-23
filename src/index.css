@@ -1,3 +1,37 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+.app-wraper {
+  background-color: #fafafa;
+  overflow-x: hidden;
+}
+
+.nav-loading {
+  width: 80px;
+  position: relative;
+  left: 8px;
+}
+
+.nav-loading-right {
+  height: 53px;
+  position: absolute;
+  top: -11px;
+  right: -76px;
+}
+
+.primary-self-text {
+  color: rgb(0, 102, 255) !important;
+}
+
+.text-default-color {
+  color: #777;
+}
+
+.side-link.active {
+  color: rgb(0, 102, 255);
+  display: flex;
+  background-color: rgba(0, 102, 255, 0.1);
+  transition-delay: 0.2s;
+  transition: all 0.3 linear;
+}
