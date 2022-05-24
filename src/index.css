@@ -39,3 +39,7 @@
   transition-delay: 0.2s;
   transition: all 0.3 linear;
 }
+
+header {
+  min-height: 80px;
+}

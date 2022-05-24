@@ -2,6 +2,7 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
+import { useSelector } from "react-redux";
 import HomeIcon from "../Icons/HomeIcon";
 import ProductIcon from "../Icons/ProductIcon";
 import InvoiceIcon from "../Icons/InvoiceIcon";
@@ -9,6 +10,7 @@ import ClientPlusIcon from "../Icons/ClientPlusIcon";
 import DeleteIcon from "../Icons/DeleteIcon";
 import SecurityIcon from "../Icons/SecurityIcon";
 import InvoiceNavbarLoading from "../Loading/InvoiceNavbarLoading";
+import { getCompanyData } from "../../store/companySlice";
 
 const NAV_DATA = [
   {
@@ -34,7 +36,7 @@ const NAV_DATA = [
 ];
 
 const navDefaultClasses =
-  "absolute inset-0 duration-200 transform lg:opacity-100 z-10 w-80 bg-white h-screen p-3";
+  "fixed inset-0 duration-200 transform lg:opacity-100 z-10 w-72 bg-white h-screen p-3";
 
 const navItemDefaultClasses =
   "block px-4 py-2 rounded-md flex bg-transparent flex-1";
@@ -42,6 +44,7 @@ const navItemDefaultClasses =
 function Sidebar() {
   const { showNavbar } = useAppContext();
   const { pathname } = useLocation();
+  const company = useSelector(getCompanyData);
 
   const isTermAndConditionRoute = useMemo(
     () => pathname === "/terms-and-condition",

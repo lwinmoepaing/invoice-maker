@@ -4,19 +4,26 @@ import DashboardWidgets from "../components/Dashboard/DashboardWidgets";
 import InvoiceIcon from "../components/Icons/InvoiceIcon";
 import Button from "../components/Button/Button";
 import QuickEditCompany from "../components/Dashboard/QuickEditCompany";
+import QuickAddClient from "../components/Dashboard/QuickAddClient";
+import { useSelector } from "react-redux";
+import { getAllClientsSelector } from "../store/clientSlice";
 
 function DashboardScreen() {
+  const clients = useSelector(getAllClientsSelector);
+
   return (
     <div>
       <div className="flex flex-wrap">
-        <div className="w-full lg:w-3/5 p-4">
+        <div className="w-full lg:w-4/6 p-4">
           <PageTitle title="Dashboard" />
 
           <div className="mt-2">
             <DashboardWidgets />
           </div>
+
+          <div>Client Length: {JSON.stringify(clients.length)}</div>
         </div>
-        <div className="w-full lg:w-2/5 p-4">
+        <div className="w-full lg:w-2/6 p-4">
           <div>
             <Button>
               <InvoiceIcon />
@@ -24,7 +31,8 @@ function DashboardScreen() {
             </Button>
           </div>
 
-          <QuickEditCompany />
+          <QuickEditCompany isShowDetail={false} />
+          <QuickAddClient />
         </div>
       </div>
     </div>

@@ -1,12 +1,23 @@
-import React from "react";
+import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 import { useAppContext } from "../../context/AppContext";
 import InvoiceNavbarLoading from "../Loading/InvoiceNavbarLoading";
 
 function Navbar() {
   const { toggleNavbar, showNavbar } = useAppContext();
+
+  const classes = useMemo(() => {
+    const defaultClasses =
+      "bg-white flex items-center pr-3 z-12 fixed w-full z-10";
+
+    if (!showNavbar) {
+      return defaultClasses + " pl-3 ";
+    }
+    return defaultClasses + " pl-72";
+  }, [showNavbar]);
+
   return (
-    <header className="bg-white flex items-center px-3 z-12">
+    <header className={classes}>
       <motion.button
         className="p-2 focus:outline-none rounded-md"
         onClick={toggleNavbar}
