@@ -7,8 +7,8 @@ import LottiePersons from "../LotiIcon/LottiePersons";
 function DashboardWidgets() {
   return (
     <>
-      <div class="flex flex-wrap">
-        <div class="w-full mb-3 md:w-1/2">
+      <div className="flex flex-wrap">
+        <div className="w-full mb-3 md:w-1/2">
           <div className="p-4 bg-white rounded-xl mx-2">
             <div className="font-title">Total Balance</div>
             <div className="flex justify-between items-center">
@@ -21,7 +21,7 @@ function DashboardWidgets() {
             </div>
           </div>
         </div>
-        <div class="w-full mb-3 md:w-1/2">
+        <div className="w-full mb-3 md:w-1/2">
           <div className="p-4 bg-white rounded-xl mx-2">
             <div className="font-title">Total Products</div>
             <div className="flex justify-between items-center">
@@ -34,7 +34,7 @@ function DashboardWidgets() {
             </div>
           </div>
         </div>
-        <div class="w-full mb-3 md:w-1/2">
+        <div className="w-full mb-3 md:w-1/2">
           <div className="p-4 bg-white rounded-xl mx-2">
             <div className="font-title">Total Invoices</div>
             <div className="flex justify-between items-center">
@@ -47,7 +47,7 @@ function DashboardWidgets() {
             </div>
           </div>
         </div>
-        <div class="w-full mb-3 md:w-1/2">
+        <div className="w-full mb-3 md:w-1/2">
           <div className="p-4 bg-white rounded-xl mx-2">
             <div className="font-title">Total Clients</div>
             <div className="flex justify-between items-center">

@@ -24,6 +24,10 @@
   color: rgb(0, 102, 255) !important;
 }
 
+.primary-background-color {
+  background-color: rgb(0, 102, 255) !important;
+}
+
 .text-default-color {
   color: #777;
 }
