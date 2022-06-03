@@ -8,12 +8,12 @@ function Navbar() {
 
   const classes = useMemo(() => {
     const defaultClasses =
-      "bg-white flex items-center pr-3 z-12 fixed w-full z-10";
+      "bg-white flex items-center pr-3 z-12 fixed w-full z-10 border-b border-slate-50 transition-all";
 
     if (!showNavbar) {
       return defaultClasses + " pl-3 ";
     }
-    return defaultClasses + " pl-72";
+    return defaultClasses + " pl-72 ";
   }, [showNavbar]);
 
   return (

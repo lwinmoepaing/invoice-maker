@@ -4,14 +4,20 @@ import LottieProduct from "../LotiIcon/LottieProduct";
 import LottieInvoice from "../LotiIcon/LottieInvoice";
 import LottiePersons from "../LotiIcon/LottiePersons";
 import Tilt from "react-parallax-tilt";
+import { useSelector } from "react-redux";
+import { getAllClientsSelector } from "../../store/clientSlice";
+import { getAllProductSelector } from "../../store/productSlice";
 
 function DashboardWidgets() {
+  const clients = useSelector(getAllClientsSelector);
+  const products = useSelector(getAllProductSelector);
+
   return (
     <>
       <div className="flex flex-wrap">
         <div className="w-full mb-3 md:w-1/2">
           <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10}>
-            <div className="p-4 bg-white rounded-xl mx-2 hover:shadow-sm">
+            <div className="p-4 bg-white rounded-xl md:mr-4 hover:shadow-sm">
               <div className="font-title">Total Balance</div>
               <div className="flex justify-between items-center">
                 {/* Icon */}
@@ -26,7 +32,7 @@ function DashboardWidgets() {
         </div>
         <div className="w-full mb-3 md:w-1/2">
           <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10}>
-            <div className="p-4 bg-white rounded-xl mx-2 hover:shadow-sm">
+            <div className="p-4 bg-white rounded-xl hover:shadow-sm">
               <div className="font-title">Total Products</div>
               <div className="flex justify-between items-center">
                 {/* Icon */}
@@ -34,14 +40,14 @@ function DashboardWidgets() {
                   <LottieProduct loop className="h-20" />
                 </div>
                 {/* Icon Finished */}
-                <div className="text-2xl mr-2">2,000</div>
+                <div className="text-2xl mr-2">{products?.length}</div>
               </div>
             </div>
           </Tilt>
         </div>
         <div className="w-full mb-3 md:w-1/2">
           <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10}>
-            <div className="p-4 bg-white rounded-xl mx-2 hover:shadow-sm">
+            <div className="p-4 bg-white rounded-xl md:mr-4 hover:shadow-sm">
               <div className="font-title">Total Invoices</div>
               <div className="flex justify-between items-center">
                 {/* Icon */}
@@ -56,7 +62,7 @@ function DashboardWidgets() {
         </div>
         <div className="w-full mb-3 md:w-1/2">
           <Tilt tiltMaxAngleX={10} tiltMaxAngleY={10}>
-            <div className="p-4 bg-white rounded-xl mx-2 hover:shadow-sm">
+            <div className="p-4 bg-white rounded-xl hover:shadow-sm">
               <div className="font-title">Total Clients</div>
               <div className="flex justify-between items-center">
                 {/* Icon */}
@@ -64,7 +70,7 @@ function DashboardWidgets() {
                   <LottiePersons loop className="h-20" />
                 </div>
                 {/* Icon Finished */}
-                <div className="text-2xl mr-2">2,000</div>
+                <div className="text-2xl mr-2">{clients?.length}</div>
               </div>
             </div>
           </Tilt>

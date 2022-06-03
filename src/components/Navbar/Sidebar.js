@@ -11,6 +11,7 @@ import DeleteIcon from "../Icons/DeleteIcon";
 import SecurityIcon from "../Icons/SecurityIcon";
 import InvoiceNavbarLoading from "../Loading/InvoiceNavbarLoading";
 import { getCompanyData } from "../../store/companySlice";
+import Skeleton from "react-loading-skeleton";
 
 const NAV_DATA = [
   {
@@ -38,11 +39,10 @@ const NAV_DATA = [
 const navDefaultClasses =
   "fixed inset-0 duration-200 transform lg:opacity-100 z-10 w-72 bg-white h-screen p-3";
 
-const navItemDefaultClasses =
-  "block px-4 py-2 rounded-md flex bg-transparent flex-1";
+const navItemDefaultClasses = "block px-4 py-2 rounded-md flex flex-1";
 
 function Sidebar() {
-  const { showNavbar } = useAppContext();
+  const { showNavbar, initLoading } = useAppContext();
   const { pathname } = useLocation();
   const company = useSelector(getCompanyData);
 
@@ -82,7 +82,24 @@ function Sidebar() {
           </motion.span>
         </div>
 
-        <ul className="mt-8">
+        {initLoading && <Skeleton className="px-4 py-5 rounded-md" />}
+        {!!company?.image && !initLoading && (
+          <motion.span
+            className={
+              navItemDefaultClasses + " bg-gray-50 flex items-center px-3"
+            }
+          >
+            <img
+              className={"object-cover h-10 w-10 rounded-lg"}
+              src={company?.image}
+              alt="upload_image"
+            />
+            <span className="flex-1 pl-2 font-title rounded-r h-8 border-r-4 border-indigo-400 flex items-center inline-block whitespace-nowrap text-ellipsis overflow-hidden ">
+              {company.companyName}
+            </span>
+          </motion.span>
+        )}
+        <ul className="mt-4">
           {NAV_DATA.map(({ title, link, Icon }) => (
             <li key={title} className="mb-2">
               <NavLink to={link} className={" rounded-md side-link"}>

@@ -4,6 +4,7 @@ import * as React from "react";
 const initData = {
   ...AppDataJson,
   toggleNavbar: () => {},
+  setInitLoading: (boolean) => {},
 };
 
 export const AppCtx = React.createContext(initData);
@@ -18,11 +19,19 @@ export const AppContextProvider = ({ children }) => {
     }));
   }, []);
 
+  const setInitLoading = React.useCallback((boolean) => {
+    setState((prev) => ({
+      ...prev,
+      initLoading: boolean,
+    }));
+  }, []);
+
   return (
     <AppCtx.Provider
       value={{
         ...state,
         toggleNavbar,
+        setInitLoading,
       }}
     >
       {children}

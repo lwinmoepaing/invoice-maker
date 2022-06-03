@@ -1,0 +1,47 @@
+{
+  "id": "ID",
+  "invoiceNo": "InvoiceNo",
+  "statusIndex": 1,
+  "statusName": "Paid",
+  "totalAmount": 0,
+  "dueDate": "10-20-2022",
+  "createdDate": "10-20-2022",
+  "clientDetail": {
+    "id": "",
+    "name": "",
+    "email": "",
+    "image": "",
+    "billingAddress": ""
+  },
+  "products": [
+    {
+      "id": "",
+      "name": "",
+      "image": "",
+      "amount": ""
+    },
+    {
+      "id": "",
+      "name": "",
+      "image": "",
+      "amount": ""
+    }
+  ],
+  "taxes": [
+    {
+      "id": "",
+      "title": "Tax %",
+      "type": "percentage",
+      "value": 10,
+      "amount": 1000
+    },
+    {
+      "id": "Barnyar",
+      "title": "Tax (Fixed)",
+      "type": "fixed",
+      "value": 10,
+      "amount": 10
+    }
+  ],
+  "currencyUnit": "MMK"
+}

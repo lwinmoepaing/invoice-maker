@@ -1,4 +1,5 @@
 {
   "showNavbar": true,
-  "darkTheme": false
+  "darkTheme": false,
+  "initLoading": true
 }

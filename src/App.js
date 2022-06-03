@@ -1,5 +1,6 @@
 import { Route, Routes, Navigate, BrowserRouter } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
+import { useEffect } from "react";
 import DashboardScreen from "./pages/DashboardScreen";
 import ClientListScreen from "./pages/clients/ClientListScreen";
 import ClientDetailScreen from "./pages/clients/ClientDetailScreen";
@@ -9,7 +10,18 @@ import InvoiceListScreen from "./pages/invoices/InvoiceListScreen";
 import InvoiceDetailScreen from "./pages/invoices/InvoiceDetailScreen";
 import TermAndConditionScreen from "./pages/terms-and-conditions/TermAndConditionScreen";
 import Container from "./components/Container/Container";
-function App() {
+import useInitApp from "./hook/useInitApp";
+import ClientDeleteConfirm from "./components/Clients/ClientDeleteConfirm";
+import ClientEditModal from "./components/Clients/ClientEditModal";
+
+const App = () => {
+  const { initialSetData } = useInitApp();
+
+  useEffect(() => {
+    initialSetData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   return (
     <BrowserRouter>
       <Container>
@@ -37,8 +49,10 @@ function App() {
         </Routes>
       </Container>
       <ToastContainer />
+      <ClientDeleteConfirm />
+      <ClientEditModal />
     </BrowserRouter>
   );
-}
+};
 
 export default App;

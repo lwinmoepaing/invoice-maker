@@ -43,3 +43,96 @@
 header {
   min-height: 80px;
 }
+
+.skeleton-input-radius {
+  border-radius: 0.75rem !important;
+}
+
+.skeleton-image {
+  width: 3.2rem !important;
+  height: 3.2rem !important;
+}
+
+/* Responsive Css */
+/* inspired by: https://css-tricks.com/responsive-data-tables/ */
+.responsiveTable {
+  width: 100%;
+}
+
+.responsiveTable td .tdBefore {
+  display: none;
+}
+
+@media screen and (max-width: 40em) {
+  /*
+    Force table elements to not behave like tables anymore
+    Hide table headers (but not display: none;, for accessibility)
+  */
+
+  .responsiveTable table,
+  .responsiveTable thead,
+  .responsiveTable tbody,
+  .responsiveTable th,
+  .responsiveTable td,
+  .responsiveTable tr {
+    display: block;
+  }
+
+  .responsiveTable thead tr {
+    position: absolute;
+    top: -9999px;
+    left: -9999px;
+    border-bottom: 2px solid #777;
+  }
+
+  .responsiveTable tbody tr {
+    /* border: 1px solid #000; */
+    padding: 0.25em;
+  }
+
+  .responsiveTable td.pivoted {
+    /* Behave like a "row" */
+    border: none !important;
+    position: relative;
+    padding-left: calc(50% + 10px) !important;
+    text-align: left !important;
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+  }
+
+  .responsiveTable td .tdBefore {
+    /* Now like a table header */
+    position: absolute;
+    display: block;
+
+    /* Top/left values mimic padding */
+    left: 1rem;
+    width: calc(50% - 20px);
+    white-space: pre-wrap;
+    overflow-wrap: break-word;
+    text-align: left !important;
+    font-weight: 600;
+  }
+}
+
+br {
+  height: 0 !important;
+  display: none;
+  opacity: 0;
+  visibility: hidden;
+}
+
+.inline-block {
+  display: inline-block !important;
+}
+
+.modal-container {
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 999;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+}

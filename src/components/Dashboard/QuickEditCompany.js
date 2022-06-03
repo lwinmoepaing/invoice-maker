@@ -1,10 +1,20 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
+import Skeleton from "react-loading-skeleton";
 import { toast } from "react-toastify";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Button from "../Button/Button";
 import ImageUpload from "../Common/ImageUpload";
 import SectionTitle from "../Common/SectionTitle";
-import { updateCompanyData } from "../../store/companySlice";
+import { getCompanyData, updateCompanyData } from "../../store/companySlice";
+import { useAppContext } from "../../context/AppContext";
+import {
+  defaultInputStyle,
+  defaultInputInvalidStyle,
+  defaultInputLargeStyle,
+  defaultInputLargeInvalidStyle,
+  defaultSkeletonLargeStyle,
+  defaultSkeletonNormalStyle,
+} from "../../constants/defaultStyles";
 
 const emptyForm = {
   id: "",
@@ -15,16 +25,10 @@ const emptyForm = {
   billingAddress: "",
 };
 
-const defaultStyle =
-  "font-title text-lg px-2 block w-full border-solid border-2 rounded-xl p-x2 focus:outline-none ";
-const defaultInputStyle = defaultStyle + "border-indigo-400 h-12";
-const defaultInputInvalidStyle = defaultStyle + "border-red-400 h-12";
-const defaultInputLargeStyle = defaultStyle + "border-indigo-400 h-14";
-const defaultInputLargeInvalidStyle = defaultStyle + "border-red-400 h-14";
-
 function QuickEditCompany({ isShowDetail = false, alreadySet = false }) {
   const dispatch = useDispatch();
-
+  const company = useSelector(getCompanyData);
+  const { initLoading: isInitLoading } = useAppContext();
   const [isTouched, setIsTouched] = useState(false);
   const [companyForm, setCompanyForm] = useState(emptyForm);
   const [validForm, setValidForm] = useState(
@@ -82,6 +86,12 @@ function QuickEditCompany({ isShowDetail = false, alreadySet = false }) {
   }, [companyForm, isTouched]);
 
   useEffect(() => {
+    if (company) {
+      setCompanyForm(company);
+    }
+  }, [company]);
+
+  useEffect(() => {
     setValidForm((prev) => ({
       id: true,
       image: companyForm.image ? true : false,
@@ -96,69 +106,93 @@ function QuickEditCompany({ isShowDetail = false, alreadySet = false }) {
     <div className="bg-white rounded-xl p-4 mt-4">
       <SectionTitle> Quick Edit Company </SectionTitle>
       <div className="flex mt-2">
-        <ImageUpload
-          onChangeImage={onChangeImage}
-          keyName="QuickEditImageUpload"
-          className={imageUploadClasses}
-          url={companyForm.image}
-        />
+        {isInitLoading ? (
+          <Skeleton className="skeleton-input-radius skeleton-image border-dashed border-2" />
+        ) : (
+          <ImageUpload
+            onChangeImage={onChangeImage}
+            keyName="QuickEditImageUpload"
+            className={imageUploadClasses}
+            url={companyForm.image}
+          />
+        )}
 
         <div className="flex-1 pl-3">
-          <input
-            value={companyForm.companyName}
-            placeholder="Company Name"
-            className={
-              !validForm.companyName && isTouched
-                ? defaultInputLargeInvalidStyle
-                : defaultInputLargeStyle
-            }
-            onChange={(e) => handlerCompanyValue(e, "companyName")}
-          />
+          {isInitLoading ? (
+            <Skeleton className={defaultSkeletonLargeStyle} />
+          ) : (
+            <input
+              value={companyForm.companyName}
+              placeholder="Company Name"
+              className={
+                !validForm.companyName && isTouched
+                  ? defaultInputLargeInvalidStyle
+                  : defaultInputLargeStyle
+              }
+              onChange={(e) => handlerCompanyValue(e, "companyName")}
+              disabled={isInitLoading}
+            />
+          )}
         </div>
       </div>
 
       <div className="flex mt-2">
         <div className="flex-1">
-          <input
-            value={companyForm.billingAddress}
-            placeholder="Company Address"
-            className={
-              !validForm.billingAddress && isTouched
-                ? defaultInputInvalidStyle
-                : defaultInputStyle
-            }
-            onChange={(e) => handlerCompanyValue(e, "billingAddress")}
-          />
+          {isInitLoading ? (
+            <Skeleton className={defaultSkeletonNormalStyle} />
+          ) : (
+            <input
+              value={companyForm.billingAddress}
+              placeholder="Company Address"
+              className={
+                !validForm.billingAddress && isTouched
+                  ? defaultInputInvalidStyle
+                  : defaultInputStyle
+              }
+              onChange={(e) => handlerCompanyValue(e, "billingAddress")}
+              disabled={isInitLoading}
+            />
+          )}
         </div>
       </div>
 
       <>
         <div className="flex mt-2">
           <div className="flex-1">
-            <input
-              value={companyForm.companyEmail}
-              placeholder="Company Email"
-              className={
-                !validForm.companyEmail && isTouched
-                  ? defaultInputInvalidStyle
-                  : defaultInputStyle
-              }
-              onChange={(e) => handlerCompanyValue(e, "companyEmail")}
-            />
+            {isInitLoading ? (
+              <Skeleton className={defaultSkeletonNormalStyle} />
+            ) : (
+              <input
+                value={companyForm.companyEmail}
+                placeholder="Company Email"
+                className={
+                  !validForm.companyEmail && isTouched
+                    ? defaultInputInvalidStyle
+                    : defaultInputStyle
+                }
+                onChange={(e) => handlerCompanyValue(e, "companyEmail")}
+                disabled={isInitLoading}
+              />
+            )}
           </div>
         </div>
         <div className="flex mt-2">
           <div className="flex-1">
-            <input
-              value={companyForm.companyMobile}
-              placeholder="Company Phone"
-              className={
-                !validForm.companyMobile && isTouched
-                  ? defaultInputInvalidStyle
-                  : defaultInputStyle
-              }
-              onChange={(e) => handlerCompanyValue(e, "companyMobile")}
-            />
+            {isInitLoading ? (
+              <Skeleton className={defaultSkeletonNormalStyle} />
+            ) : (
+              <input
+                value={companyForm.companyMobile}
+                placeholder="Company Phone"
+                className={
+                  !validForm.companyMobile && isTouched
+                    ? defaultInputInvalidStyle
+                    : defaultInputStyle
+                }
+                onChange={(e) => handlerCompanyValue(e, "companyMobile")}
+                disabled={isInitLoading}
+              />
+            )}
           </div>
         </div>
       </>

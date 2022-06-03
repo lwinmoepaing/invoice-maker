@@ -1,0 +1,12 @@
+[
+  {
+    "id": "ID",
+    "invoiceNo": "InvoiceNo",
+    "statusIndex": 1,
+    "statusName": "Paid",
+    "totalAmount": 0,
+    "dueDate": "10-20-2022",
+    "createdDate": "",
+    "clientName": ""
+  }
+]
