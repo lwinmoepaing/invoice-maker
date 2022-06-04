@@ -217,7 +217,7 @@ function QuickAddClient({ editForm }) {
       </div>
 
       <div className="mt-3">
-        <Button onClick={submitHandler}>
+        <Button onClick={submitHandler} block={1}>
           <span className="inline-block ml-2"> Submit </span>
         </Button>
       </div>

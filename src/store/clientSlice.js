@@ -78,7 +78,7 @@ export const clientsSlice = createSlice({
         state.data[isFindIndex] = { ...action.payload };
       }
       state.editedID = null;
-      localforage.setItem(CLIENTS_KEY, state.data);
+      localforage.setItem(CLIENTS_KEY, [...state.data]);
     },
   },
 });

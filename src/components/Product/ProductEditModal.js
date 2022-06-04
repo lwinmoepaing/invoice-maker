@@ -4,36 +4,32 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useSelector, useDispatch } from "react-redux";
 import {
-  getAllClientsSelector,
+  getAllProductSelector,
   getEditedIdForm,
   setEditedId,
-  onConfirmEditClient,
-} from "../../store/clientSlice";
+  onConfirmEditProduct,
+} from "../../store/productSlice";
+import ImageUpload from "../Common/ImageUpload";
 import {
-  defaultInputStyle,
   defaultInputInvalidStyle,
   defaultInputLargeStyle,
-  defaultInputLargeInvalidStyle,
+  defaultInputStyle,
 } from "../../constants/defaultStyles";
-import ImageUpload from "../Common/ImageUpload";
 
 const emptyForm = {
   id: "",
   image: "",
+  productID: "",
   name: "",
-  email: "",
-  billingAddress: "",
-  mobileNo: "",
+  amount: 0,
 };
 
-const emailRegex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-
-function ClientEditModal(props) {
+function ProductEditModal(props) {
   const dispatch = useDispatch();
   const editedID = useSelector(getEditedIdForm);
-  const clients = useSelector(getAllClientsSelector);
+  const products = useSelector(getAllProductSelector);
   const [animate, setAnimate] = useState(true);
-  const [clientForm, setClientForm] = useState(emptyForm);
+  const [productForm, setProductForm] = useState(emptyForm);
   const [isTouched, setIsTouched] = useState(false);
   const [validForm, setValidForm] = useState(
     Object.keys(emptyForm).reduce((a, b) => {
@@ -53,68 +49,63 @@ function ClientEditModal(props) {
       return;
     }
 
-    toast.success("Wow Successfully Update Client!", {
+    toast.success("Wow Successfully Update Product!", {
       position: "bottom-center",
       autoClose: 2000,
     });
 
-    dispatch(onConfirmEditClient(clientForm));
+    dispatch(onConfirmEditProduct(productForm));
     setIsTouched(false);
-  }, [dispatch, validForm, clientForm]);
+  }, [dispatch, validForm, productForm]);
 
-  const handlerClientValue = useCallback((event, keyName) => {
+  const handlerProductValue = useCallback((event, keyName) => {
     const value = event.target.value;
 
-    setClientForm((prev) => {
+    setProductForm((prev) => {
       return { ...prev, [keyName]: value };
     });
   }, []);
 
   const onChangeImage = useCallback((str) => {
-    setClientForm((prev) => ({ ...prev, image: str }));
+    setProductForm((prev) => ({ ...prev, image: str }));
   }, []);
 
   const onCancelHandler = useCallback(() => {
     dispatch(setEditedId(null));
   }, [dispatch]);
 
-  // useCallback(() => {}, [])
-
   const imageUploadClasses = useMemo(() => {
     const defaultStyle = "rounded-xl ";
 
-    if (!clientForm.image) {
+    if (!productForm.image) {
       return defaultStyle + " border-dashed border-2 border-indigo-400 ";
     }
 
     return defaultStyle;
-  }, [clientForm]);
+  }, [productForm]);
 
   useEffect(() => {
-    const isValidEmail =
-      clientForm?.email?.trim() && clientForm?.email.match(emailRegex);
-
-    setValidForm((prev) => ({
-      id: true,
-      image: true,
-      name: clientForm?.name?.trim() ? true : false,
-      email: isValidEmail ? true : false,
-      billingAddress: clientForm?.billingAddress?.trim() ? true : false,
-      mobileNo: clientForm?.mobileNo?.trim() ? true : false,
-    }));
-  }, [clientForm]);
+      setValidForm((prev) => ({
+        id: true,
+        image: true,
+        name: productForm?.name?.trim() ? true : false,
+        amount: productForm?.amount <= 0 ? false : true,
+      }));
+  }, [productForm]);
 
   useEffect(() => {
     if (editedID !== null) {
       setAnimate(true);
-      const isFindIndex = clients.findIndex((client) => client.id === editedID);
+      const isFindIndex = products.findIndex(
+        (client) => client.id === editedID
+      );
       if (isFindIndex !== -1) {
-        setClientForm({ ...clients[isFindIndex] });
+        setProductForm({ ...products[isFindIndex] });
       }
     } else {
       setAnimate(false);
     }
-  }, [clients, editedID]);
+  }, [products, editedID]);
 
   return editedID !== null ? (
     <motion.div
@@ -146,7 +137,7 @@ function ClientEditModal(props) {
                       className="text-lg leading-6 font-medium text-gray-900"
                       id="modal-title"
                     >
-                      Edited Client Form
+                      Edited Product Form
                     </h3>
                     <div className="mt-2">
                       {/*  */}
@@ -155,71 +146,66 @@ function ClientEditModal(props) {
                           <ImageUpload
                             keyName="QuickEditImageUpload"
                             className={imageUploadClasses}
-                            url={clientForm.image}
+                            url={productForm.image}
                             onChangeImage={onChangeImage}
                           />
 
                           <div className="flex-1 pl-3">
-                            <input
-                              autoComplete="nope"
-                              value={clientForm.name}
-                              placeholder="User Name"
-                              className={
-                                !validForm.name && isTouched
-                                  ? defaultInputLargeInvalidStyle
-                                  : defaultInputLargeStyle
-                              }
-                              onChange={(e) => handlerClientValue(e, "name")}
-                            />
+                            <div>
+                              <input
+                                autoComplete="nope"
+                                value={productForm.productID}
+                                placeholder="Product ID"
+                                className={defaultInputLargeStyle}
+                                onChange={(e) =>
+                                  handlerProductValue(e, "productID")
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="flex mt-2">
-                          <div className="flex-1">
-                            <input
-                              autoComplete="nope"
-                              placeholder="Email Address"
-                              className={
-                                !validForm.email && isTouched
-                                  ? defaultInputInvalidStyle
-                                  : defaultInputStyle
-                              }
-                              value={clientForm.email}
-                              onChange={(e) => handlerClientValue(e, "email")}
-                            />
+                        <div className="mt-2">
+                          <div className="font-title text-sm text-default-color">
+                            Product Name
+                          </div>
+                          <div className="flex">
+                            <div className="flex-1">
+                              <input
+                                autoComplete="nope"
+                                placeholder="Product Name"
+                                type="text"
+                                className={
+                                  !validForm.name && isTouched
+                                    ? defaultInputInvalidStyle
+                                    : defaultInputStyle
+                                }
+                                value={productForm.name}
+                                onChange={(e) => handlerProductValue(e, "name")}
+                              />
+                            </div>
                           </div>
                         </div>
-                        <div className="flex mt-2">
-                          <div className="flex-1">
-                            <input
-                              autoComplete="nope"
-                              placeholder="Mobile No"
-                              className={
-                                !validForm.mobileNo && isTouched
-                                  ? defaultInputInvalidStyle
-                                  : defaultInputStyle
-                              }
-                              value={clientForm.mobileNo}
-                              onChange={(e) =>
-                                handlerClientValue(e, "mobileNo")
-                              }
-                            />
+                        <div className="mt-2">
+                          <div className="font-title text-sm text-default-color">
+                            Product Amount
                           </div>
-                        </div>
-                        <div className="flex mt-2">
-                          <div className="flex-1">
-                            <input
-                              autoComplete="nope"
-                              placeholder="Billing Address"
-                              className={
-                                !validForm.billingAddress && isTouched
-                                  ? defaultInputInvalidStyle
-                                  : defaultInputStyle
-                              }
-                              value={clientForm.billingAddress}
-                              onChange={(e) =>
-                                handlerClientValue(e, "billingAddress")
-                              }
-                            />
+                          <div className="flex">
+                            <div className="flex-1">
+                              <input
+                                autoComplete="nope"
+                                placeholder="Amount"
+                                type="number"
+                                className={
+                                  !validForm.amount && isTouched
+                                    ? defaultInputInvalidStyle
+                                    : defaultInputStyle
+                                }
+                                value={productForm.amount}
+                                onChange={(e) =>
+                                  handlerProductValue(e, "amount")
+                                }
+                              />
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -252,4 +238,4 @@ function ClientEditModal(props) {
   ) : null;
 }
 
-export default ClientEditModal;
+export default ProductEditModal;

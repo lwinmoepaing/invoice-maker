@@ -94,7 +94,7 @@ function Sidebar() {
               src={company?.image}
               alt="upload_image"
             />
-            <span className="flex-1 pl-2 font-title rounded-r h-8 border-r-4 border-indigo-400 flex items-center inline-block whitespace-nowrap text-ellipsis overflow-hidden ">
+            <span className="flex-1 pl-2 font-title rounded-r py-1 border-r-4 border-indigo-400 flex items-center inline-block whitespace-nowrap text-ellipsis overflow-hidden ">
               {company.companyName}
             </span>
           </motion.span>

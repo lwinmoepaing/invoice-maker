@@ -1,47 +1,63 @@
 {
-  "id": "ID",
-  "invoiceNo": "InvoiceNo",
-  "statusIndex": 1,
-  "statusName": "Paid",
-  "totalAmount": 0,
-  "dueDate": "10-20-2022",
-  "createdDate": "10-20-2022",
-  "clientDetail": {
-    "id": "",
-    "name": "",
-    "email": "",
-    "image": "",
-    "billingAddress": ""
-  },
-  "products": [
-    {
+  "idKey": {
+    "id": "ID",
+    "invoiceNo": "InvoiceNo",
+    "statusIndex": 1,
+    "statusName": "Paid",
+    "totalAmount": 0,
+    "color": "#dfdfdf",
+    "backgroundImage": {
+      "id": "string",
+      "base64": "string"
+    },
+    "dueDate": "10-20-2022",
+    "createdDate": "10-20-2022",
+    "companyDetail": {
+      "id": "nanoid",
+      "image": "base64Image",
+      "billingAddress": "Address",
+      "companyName": "Testing Company",
+      "companyEmail": "Company@email.com",
+      "companyMobile": "0811111111"
+    },
+    "clientDetail": {
       "id": "",
       "name": "",
+      "mobileNo": "",
+      "email": "",
       "image": "",
-      "amount": ""
+      "billingAddress": ""
     },
-    {
-      "id": "",
-      "name": "",
-      "image": "",
-      "amount": ""
-    }
-  ],
-  "taxes": [
-    {
-      "id": "",
-      "title": "Tax %",
-      "type": "percentage",
-      "value": 10,
-      "amount": 1000
-    },
-    {
-      "id": "Barnyar",
-      "title": "Tax (Fixed)",
-      "type": "fixed",
-      "value": 10,
-      "amount": 10
-    }
-  ],
-  "currencyUnit": "MMK"
+    "products": [
+      {
+        "id": "",
+        "name": "",
+        "image": "",
+        "amount": ""
+      },
+      {
+        "id": "",
+        "name": "",
+        "image": "",
+        "amount": ""
+      }
+    ],
+    "taxes": [
+      {
+        "id": "",
+        "title": "Tax %",
+        "type": "percentage",
+        "value": 10,
+        "amount": 1000
+      },
+      {
+        "id": "Barnyar",
+        "title": "Tax (Fixed)",
+        "type": "fixed",
+        "value": 10,
+        "amount": 10
+      }
+    ],
+    "currencyUnit": "MMK"
+  }
 }

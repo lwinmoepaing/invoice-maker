@@ -1,0 +1,14 @@
+[
+  {
+    "id": "1",
+    "statusName": "Draft"
+  },
+  {
+    "id": "2",
+    "statusName": "Unpaid"
+  },
+  {
+    "id": "3",
+    "statusName": "Paid"
+  }
+]

@@ -1,6 +1,10 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllProductSelector } from "../../store/productSlice";
+import {
+  getAllProductSelector,
+  setDeleteId,
+  setEditedId,
+} from "../../store/productSlice";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import {
   defaultTdStyle,
@@ -53,13 +57,19 @@ function ProductTable({ showAdvanceSearch = false }) {
     setItemOffset(newOffset);
   };
 
-  const handleDelete = useCallback((item) => {
-    //   dispatch(setDeleteId(item.id));
-  }, []);
+  const handleDelete = useCallback(
+    (item) => {
+      dispatch(setDeleteId(item.id));
+    },
+    [dispatch]
+  );
 
-  const handleEdit = useCallback((item) => {
-    //   dispatch(setEditedId(item.id));
-  }, []);
+  const handleEdit = useCallback(
+    (item) => {
+      dispatch(setEditedId(item.id));
+    },
+    [dispatch]
+  );
 
   const handlerSearchValue = useCallback((event, keyName) => {
     const value = event.target.value;

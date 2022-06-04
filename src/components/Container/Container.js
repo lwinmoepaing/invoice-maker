@@ -16,8 +16,8 @@ function Container({ children }) {
       <div
         className={
           showNavbar
-            ? defaultContainerClasses + " pl-72 ease-in"
-            : defaultContainerClasses
+            ? defaultContainerClasses + " pl-72 ease-in scale-90 origin-top-right sm:origin-center sm:scale-100"
+            : defaultContainerClasses + " "
         }
       >
         <div className="container mx-auto">{children}</div>

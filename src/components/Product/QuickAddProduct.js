@@ -11,7 +11,6 @@ import {
   defaultInputStyle,
   defaultInputInvalidStyle,
   defaultInputLargeStyle,
-  defaultInputLargeInvalidStyle,
   defaultSkeletonLargeStyle,
   defaultSkeletonNormalStyle,
 } from "../../constants/defaultStyles";
@@ -194,9 +193,8 @@ function QuickAddProduct() {
           </div>
         </div>
       </div>
-
       <div className="mt-3">
-        <Button onClick={submitHandler}>
+        <Button onClick={submitHandler} block={1}>
           <span className="inline-block ml-2"> Submit </span>
         </Button>
       </div>

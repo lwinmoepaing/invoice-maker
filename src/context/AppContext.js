@@ -1,5 +1,7 @@
 import AppDataJson from "../shared/AppData.json";
 import * as React from "react";
+import localforage from "localforage";
+import { APP_CONTEXT } from "../constants/localKeys";
 
 const initData = {
   ...AppDataJson,
@@ -13,10 +15,16 @@ export const AppContextProvider = ({ children }) => {
   const [state, setState] = React.useState(initData);
 
   const toggleNavbar = React.useCallback(() => {
-    setState((prev) => ({
-      ...prev,
-      showNavbar: !prev?.showNavbar,
-    }));
+    setState((prev) => {
+      const updateData = {
+        ...prev,
+        showNavbar: !prev?.showNavbar,
+      };
+
+      const { darkTheme, initLoading, showNavbar } = updateData;
+      localforage.setItem(APP_CONTEXT, { darkTheme, initLoading, showNavbar });
+      return updateData;
+    });
   }, []);
 
   const setInitLoading = React.useCallback((boolean) => {
@@ -24,6 +32,15 @@ export const AppContextProvider = ({ children }) => {
       ...prev,
       initLoading: boolean,
     }));
+  }, []);
+
+  React.useEffect(() => {
+    (async () => {
+      const appContext = await localforage.getItem(APP_CONTEXT);
+      if (appContext) {
+        setState((prev) => ({ ...prev, showNavbar: appContext.showNavbar }));
+      }
+    })();
   }, []);
 
   return (

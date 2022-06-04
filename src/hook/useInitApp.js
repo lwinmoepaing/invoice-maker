@@ -5,12 +5,19 @@ import {
   CLIENTS_KEY,
   CLIENT_FORM_KEY,
   COMPANY_KEY,
+  PRODUCTS_KEY,
   PRODUCT_FORM_KEY,
+  // APP_CONTEXT,
+  INVOICE_DETAILS,
+  INVOICES_KEY,
+  DEFAULT_INVOICE_COLOR,
+  DEFAULT_INVOICE_BG,
 } from "../constants/localKeys";
 import { useAppContext } from "../context/AppContext";
 import { updateNewClientForm, setAllClients } from "../store/clientSlice";
 import { updateCompanyData } from "../store/companySlice";
-import { updateNewProductForm } from "../store/productSlice";
+import { setAllInvoice } from "../store/invoiceSlice";
+import { setAllProducts, updateNewProductForm } from "../store/productSlice";
 
 const useInitApp = () => {
   const dispatch = useDispatch();
@@ -18,13 +25,27 @@ const useInitApp = () => {
 
   const initialSetData = useCallback(async () => {
     try {
-      const [companyData, clientNewForm, clients, productNewForm] =
-        await Promise.all([
-          localforage.getItem(COMPANY_KEY),
-          localforage.getItem(CLIENT_FORM_KEY),
-          localforage.getItem(CLIENTS_KEY),
-          localforage.getItem(PRODUCT_FORM_KEY),
-        ]);
+      const [
+        companyData,
+        clientNewForm,
+        clients,
+        productNewForm,
+        products,
+        invoices,
+        invoiceDetailList,
+        defaultColor,
+        defaultBackground,
+      ] = await Promise.all([
+        localforage.getItem(COMPANY_KEY),
+        localforage.getItem(CLIENT_FORM_KEY),
+        localforage.getItem(CLIENTS_KEY),
+        localforage.getItem(PRODUCT_FORM_KEY),
+        localforage.getItem(PRODUCTS_KEY),
+        localforage.getItem(INVOICES_KEY),
+        localforage.getItem(INVOICE_DETAILS),
+        localforage.getItem(DEFAULT_INVOICE_COLOR),
+        localforage.getItem(DEFAULT_INVOICE_BG),
+      ]);
 
       if (companyData) {
         dispatch(updateCompanyData(companyData));
@@ -40,6 +61,23 @@ const useInitApp = () => {
 
       if (productNewForm) {
         dispatch(updateNewProductForm(productNewForm));
+      }
+
+      if (products) {
+        dispatch(setAllProducts(products));
+      }
+
+      if (invoices) {
+        dispatch(setAllInvoice(invoices));
+      }
+
+      if (invoiceDetailList) {
+      }
+
+      if (defaultColor) {
+      }
+
+      if (defaultBackground) {
       }
     } catch (e) {
       console.log(e);

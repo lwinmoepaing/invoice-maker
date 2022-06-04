@@ -76,7 +76,7 @@ export const productSlice = createSlice({
         state.data[isFindIndex] = { ...action.payload };
       }
       state.editedID = null;
-      localforage.setItem(PRODUCTS_KEY, state.data);
+      localforage.setItem(PRODUCTS_KEY, [...state.data]);
     },
   },
 });
@@ -96,7 +96,7 @@ export const getAllProductSelector = (state) => state.products.data;
 
 export const getProductNewForm = (state) => state.products.newForm;
 
-export const getDeletedClientForm = (state) => state.products.deletedID;
+export const getDeletedProductForm = (state) => state.products.deletedID;
 
 export const getEditedIdForm = (state) => state.products.editedID;
 
