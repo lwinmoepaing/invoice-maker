@@ -10,13 +10,14 @@ import {
   // APP_CONTEXT,
   INVOICE_DETAILS,
   INVOICES_KEY,
+  INVOICE_FORM_KEY,
   DEFAULT_INVOICE_COLOR,
   DEFAULT_INVOICE_BG,
 } from "../constants/localKeys";
 import { useAppContext } from "../context/AppContext";
 import { updateNewClientForm, setAllClients } from "../store/clientSlice";
 import { updateCompanyData } from "../store/companySlice";
-import { setAllInvoice } from "../store/invoiceSlice";
+import { setAllInvoice, updateNewInvoiceForm } from "../store/invoiceSlice";
 import { setAllProducts, updateNewProductForm } from "../store/productSlice";
 
 const useInitApp = () => {
@@ -33,6 +34,7 @@ const useInitApp = () => {
         products,
         invoices,
         invoiceDetailList,
+        invoiceNewForm,
         defaultColor,
         defaultBackground,
       ] = await Promise.all([
@@ -43,6 +45,7 @@ const useInitApp = () => {
         localforage.getItem(PRODUCTS_KEY),
         localforage.getItem(INVOICES_KEY),
         localforage.getItem(INVOICE_DETAILS),
+        localforage.getItem(INVOICE_FORM_KEY),
         localforage.getItem(DEFAULT_INVOICE_COLOR),
         localforage.getItem(DEFAULT_INVOICE_BG),
       ]);
@@ -78,6 +81,10 @@ const useInitApp = () => {
       }
 
       if (defaultBackground) {
+      }
+
+      if (invoiceNewForm) {
+        dispatch(updateNewInvoiceForm(invoiceNewForm));
       }
     } catch (e) {
       console.log(e);

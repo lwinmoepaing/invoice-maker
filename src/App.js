@@ -13,6 +13,10 @@ import ClientDeleteConfirm from "./components/Clients/ClientDeleteConfirm";
 import ClientEditModal from "./components/Clients/ClientEditModal";
 import ProductDeleteConfirm from "./components/Product/ProductDeleteConfirm";
 import ProductEditModal from "./components/Product/ProductEditModal";
+import ClientChooseModal from "./components/Clients/ClientChooseModal";
+import ProductChoosenModal from "./components/Product/ProductChoosenModal";
+import InvoiceSettingModal from "./components/Invoice/InvoiceSettingModal";
+import InvoiceConfirmModal from "./components/Invoice/InvoiceConfirmModal";
 
 const App = () => {
   const { initialSetData } = useInitApp();
@@ -48,8 +52,12 @@ const App = () => {
       <ToastContainer />
       <ClientDeleteConfirm />
       <ClientEditModal />
+      <ClientChooseModal />
       <ProductDeleteConfirm />
       <ProductEditModal />
+      <ProductChoosenModal />
+      <InvoiceSettingModal />
+      <InvoiceConfirmModal />
     </BrowserRouter>
   );
 };

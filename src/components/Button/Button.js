@@ -2,14 +2,22 @@ import React, { useMemo } from "react";
 import { motion } from "framer-motion";
 
 function Button(props) {
-  const { children, size = "", block = false, outlined = false } = props;
+  const {
+    children,
+    size = "",
+    block = false,
+    outlined = false,
+    secondary = false,
+    success = false,
+    danger = false,
+  } = props;
 
   const buttonClasses = useMemo(() => {
     let defaultClasses =
-      "rounded-xl font-title text-white w-full flex items-center justify-center";
+      "rounded-xl font-title text-white flex flex-row items-center justify-center";
 
     if (block) {
-      defaultClasses += " block";
+      defaultClasses += " block w-full ";
     }
 
     if (size === "sm") {
@@ -19,13 +27,25 @@ function Button(props) {
     }
 
     if (outlined) {
-      defaultClasses += " primary-self-text border-blue-400 border";
+      if (secondary) {
+        defaultClasses += " border-gray-400 border text-gray-600";
+      } else if (success) {
+        defaultClasses += " border-green-600 border text-green-500";
+      } else if (danger) {
+        defaultClasses += " border-red-500 border text-red-500";
+      } else defaultClasses += " primary-self-text border-blue-400 border ";
     } else {
-      defaultClasses += " primary-background-color ";
+      if (secondary) {
+        defaultClasses += " bg-gray-400 ";
+      } else if (success) {
+        defaultClasses += " bg-green-600 ";
+      } else if (danger) {
+        defaultClasses += " bg-red-500 ";
+      } else defaultClasses += " primary-background-color ";
     }
 
     return defaultClasses;
-  }, [block, outlined, size]);
+  }, [block, danger, outlined, secondary, size, success]);
 
   return (
     <motion.button

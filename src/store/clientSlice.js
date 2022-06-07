@@ -4,6 +4,8 @@ import { nanoid } from "nanoid";
 import { CLIENTS_KEY, CLIENT_FORM_KEY } from "../constants/localKeys";
 
 const initialState = {
+  openClientSelector: false,
+  selectedClient: null,
   data: [],
   newForm: {
     id: nanoid(),
@@ -80,6 +82,22 @@ export const clientsSlice = createSlice({
       state.editedID = null;
       localforage.setItem(CLIENTS_KEY, [...state.data]);
     },
+
+    setOpenClientSelector: (state, action) => {
+      state.openClientSelector = action.payload;
+      if (!action.payload) {
+        state.selectedClient = null;
+      }
+    },
+
+    setClientSelector: (state, action) => {
+      const isFindIndex = state.data.findIndex(
+        (client) => client.id === action.payload
+      );
+      if (isFindIndex !== -1) {
+        state.selectedClient = state.data[isFindIndex];
+      }
+    },
   },
 });
 
@@ -92,6 +110,8 @@ export const {
   setEditedId,
   onConfirmDeletedClient,
   onConfirmEditClient,
+  setOpenClientSelector,
+  setClientSelector,
 } = clientsSlice.actions;
 
 export const getAllClientsSelector = (state) => state.clients.data;
@@ -101,5 +121,10 @@ export const getClientNewForm = (state) => state.clients.newForm;
 export const getDeletedClientForm = (state) => state.clients.deletedID;
 
 export const getEditedIdForm = (state) => state.clients.editedID;
+
+export const getIsOpenClientSelector = (state) =>
+  state.clients.openClientSelector;
+
+export const getSelectedClient = (state) => state.clients.selectedClient;
 
 export default clientsSlice.reducer;

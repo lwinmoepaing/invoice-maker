@@ -1,4 +1,4 @@
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { motion } from "framer-motion";
 import { NavLink, useLocation } from "react-router-dom";
 import { useAppContext } from "../../context/AppContext";
@@ -42,9 +42,17 @@ const navDefaultClasses =
 const navItemDefaultClasses = "block px-4 py-2 rounded-md flex flex-1";
 
 function Sidebar() {
-  const { showNavbar, initLoading } = useAppContext();
+  const { showNavbar, initLoading, toggleNavbar } = useAppContext();
   const { pathname } = useLocation();
   const company = useSelector(getCompanyData);
+
+  const onClickNavbar = useCallback(() => {
+    const width = window.innerWidth;
+
+    if (width <= 767 && showNavbar) {
+      toggleNavbar();
+    }
+  }, [showNavbar, toggleNavbar]);
 
   const isTermAndConditionRoute = useMemo(
     () => pathname === "/terms-and-condition",
@@ -102,7 +110,11 @@ function Sidebar() {
         <ul className="mt-4">
           {NAV_DATA.map(({ title, link, Icon }) => (
             <li key={title} className="mb-2">
-              <NavLink to={link} className={" rounded-md side-link"}>
+              <NavLink
+                to={link}
+                className={" rounded-md side-link"}
+                onClick={onClickNavbar}
+              >
                 {({ isActive }) => (
                   <motion.span
                     key={`${title}_nav_item`}

@@ -11,9 +11,12 @@ import {
 } from "../constants/localKeys";
 
 const initialState = {
+  isConfirmModal: false,
+  isConfirm: false,
+  settingOpen: false,
   defaultColor: colorData[0],
-  colors: colorData,
   defaultBgImage: imageData[0],
+  colors: colorData,
   images: imageData,
   data: [],
   detailList: {},
@@ -27,9 +30,9 @@ const initialState = {
     totalAmount: 0,
     color: colorData[0],
     backgroundImage: imageData[0],
-    dueDate: "",
-    createdDate: "",
-    currencyUnit: "",
+    dueDate: new Date(),
+    createdDate: new Date(),
+    currencyUnit: "$",
     clientDetail: {
       id: "",
       name: "",
@@ -38,7 +41,15 @@ const initialState = {
       image: "",
       billingAddress: "",
     },
-    products: [],
+    products: [
+      {
+        amount: 1200,
+        id: "D9vPlvwg11cxYJToEf3x4",
+        name: "productName",
+        productID: "",
+        quantity: 1,
+      },
+    ],
     taxes: [],
   },
 };
@@ -130,9 +141,30 @@ export const invoiceSlice = createSlice({
       localforage.setItem(INVOICES_KEY, [...state.data]);
     },
 
+    updateNewInvoiceFormField: (state, action) => {
+      state.newForm[action.payload.key] = action.payload.value;
+      const newForm = { ...state.newForm };
+      localforage.setItem(
+        INVOICE_FORM_KEY,
+        JSON.parse(JSON.stringify(newForm))
+      );
+    },
+
     updateNewInvoiceForm: (state, action) => {
       state.newForm = { ...action.payload };
       localforage.setItem(INVOICE_FORM_KEY, { ...state.newForm });
+    },
+
+    setSettingModalOpen: (state, action) => {
+      state.settingOpen = action.payload;
+    },
+
+    setConfirmModalOpen: (state, action) => {
+      state.isConfirmModal = action.payload;
+    },
+
+    setIsConfirm: (state, action) => {
+      state.isConfirm = action.payload;
     },
   },
 });
@@ -144,9 +176,13 @@ export const {
   setDefaultBackground,
   setDeleteId,
   setEditedId,
+  setSettingModalOpen,
+  setConfirmModalOpen,
+  setIsConfirm,
   onConfirmDeletedInvoice,
   onConfirmEditInvoice,
   updateNewInvoiceForm,
+  updateNewInvoiceFormField,
 } = invoiceSlice.actions;
 
 export const getAllInvoiceSelector = (state) => state.invoices.data;
@@ -165,5 +201,12 @@ export const getInvoiceDetailByID = (id) => (state) =>
 export const getDeletedInvoiceForm = (state) => state.invoices.deletedID;
 
 export const getInvoiceNewForm = (state) => state.invoices.newForm;
+
+export const getInvoiceSettingModal = (state) => state.invoices.settingOpen;
+
+export const getIsInvoiceConfirmModal = (state) =>
+  state.invoices.isConfirmModal;
+
+export const getIsConfirm = (state) => state.invoices.isConfirm;
 
 export default invoiceSlice.reducer;

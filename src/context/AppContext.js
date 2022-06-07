@@ -6,7 +6,9 @@ import { APP_CONTEXT } from "../constants/localKeys";
 const initData = {
   ...AppDataJson,
   toggleNavbar: () => {},
+  setEscapeOverflow: (boolean) => {},
   setInitLoading: (boolean) => {},
+  setScreenLoading: (boolean) => {},
 };
 
 export const AppCtx = React.createContext(initData);
@@ -34,6 +36,17 @@ export const AppContextProvider = ({ children }) => {
     }));
   }, []);
 
+  const setScreenLoading = React.useCallback((boolean) => {
+    setState((prev) => ({
+      ...prev,
+      screenLoading: boolean,
+    }));
+  }, []);
+
+  const setEscapeOverflow = React.useCallback((boolean) => {
+    setState((prev) => ({ ...prev, escapeOverflow: boolean }));
+  }, []);
+
   React.useEffect(() => {
     (async () => {
       const appContext = await localforage.getItem(APP_CONTEXT);
@@ -49,6 +62,8 @@ export const AppContextProvider = ({ children }) => {
         ...state,
         toggleNavbar,
         setInitLoading,
+        setScreenLoading,
+        setEscapeOverflow,
       }}
     >
       {children}

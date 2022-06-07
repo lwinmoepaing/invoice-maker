@@ -4,6 +4,8 @@ import { nanoid } from "nanoid";
 import { PRODUCTS_KEY, PRODUCT_FORM_KEY } from "../constants/localKeys";
 
 const initialState = {
+  openProductSelector: false,
+  selectedProduct: null,
   data: [],
   newForm: {
     id: nanoid(),
@@ -78,6 +80,22 @@ export const productSlice = createSlice({
       state.editedID = null;
       localforage.setItem(PRODUCTS_KEY, [...state.data]);
     },
+
+    setOpenProductSelector: (state, action) => {
+      state.openProductSelector = action.payload;
+      if (!action.payload) {
+        state.selectedProduct = null;
+      }
+    },
+
+    setProductSelector: (state, action) => {
+      const isFindIndex = state.data.findIndex(
+        (product) => product.id === action.payload
+      );
+      if (isFindIndex !== -1) {
+        state.selectedProduct = state.data[isFindIndex];
+      }
+    },
   },
 });
 
@@ -90,6 +108,8 @@ export const {
   setEditedId,
   onConfirmDeletedProduct,
   onConfirmEditProduct,
+  setOpenProductSelector,
+  setProductSelector,
 } = productSlice.actions;
 
 export const getAllProductSelector = (state) => state.products.data;
@@ -99,5 +119,10 @@ export const getProductNewForm = (state) => state.products.newForm;
 export const getDeletedProductForm = (state) => state.products.deletedID;
 
 export const getEditedIdForm = (state) => state.products.editedID;
+
+export const getIsOpenProductSelector = (state) =>
+  state.products.openProductSelector;
+
+export const getSelectedProduct = (state) => state.products.selectedProduct;
 
 export default productSlice.reducer;

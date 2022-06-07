@@ -11,4 +11,8 @@ export const store = configureStore({
     products: productRedicer,
     invoices: invoiceReducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({
+      serializableCheck: false,
+    }),
 });

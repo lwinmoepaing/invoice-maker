@@ -48,8 +48,8 @@ function Navbar() {
           />
         </svg>
       </motion.button>
-      <span
-        className="block text-2xl sm:text-3xl font-bold p-4"
+      <div
+        className="block flex-1 text-2xl sm:text-3xl font-bold p-4 relative justify-center items-center"
         initial={{
           opacity: 0,
         }}
@@ -59,8 +59,8 @@ function Navbar() {
       >
         {showNavbar && <>&nbsp;</>}
         {!showNavbar && (
-          <motion.span
-            className="inline-block relative font-bold font-title text-2xl sm:text-2xl p-2 flex justify-center items-center"
+          <motion.div
+            className=" relative font-bold font-title text-2xl p-2 flex flex-row justify-center items-center"
             initial={{
               translateX: "10vw",
               opacity: 0.8,
@@ -76,10 +76,13 @@ function Navbar() {
             }}
           >
             Invoice Maker
-            <InvoiceNavbarLoading loop className="nav-loading-right" />
-          </motion.span>
+            <InvoiceNavbarLoading
+              loop
+              className="nav-loading-right "
+            />
+          </motion.div>
         )}
-      </span>
+      </div>
     </header>
   );
 }
