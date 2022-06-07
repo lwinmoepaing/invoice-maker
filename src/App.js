@@ -6,7 +6,7 @@ import ClientListScreen from "./pages/clients/ClientListScreen";
 import ProductListScreen from "./pages/products/ProductListScreen";
 import InvoiceListScreen from "./pages/invoices/InvoiceListScreen";
 import InvoiceDetailScreen from "./pages/invoices/InvoiceDetailScreen";
-import TermAndConditionScreen from "./pages/terms-and-conditions/TermAndConditionScreen";
+import AboutScreen from "./pages/about/AboutScreen";
 import Container from "./components/Container/Container";
 import useInitApp from "./hook/useInitApp";
 import ClientDeleteConfirm from "./components/Clients/ClientDeleteConfirm";
@@ -43,7 +43,7 @@ const App = () => {
             <Route path=":id" element={<InvoiceDetailScreen />} />
           </Route>
 
-          <Route path="about" element={<TermAndConditionScreen />} />
+          <Route path="about" element={<AboutScreen />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
