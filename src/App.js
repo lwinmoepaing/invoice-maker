@@ -17,6 +17,8 @@ import ClientChooseModal from "./components/Clients/ClientChooseModal";
 import ProductChoosenModal from "./components/Product/ProductChoosenModal";
 import InvoiceSettingModal from "./components/Invoice/InvoiceSettingModal";
 import InvoiceConfirmModal from "./components/Invoice/InvoiceConfirmModal";
+import InvoiceDeleteConfirm from "./components/Invoice/InvoiceDeleteConfirm";
+import PageLoading from "./components/Common/PageLoading";
 
 const App = () => {
   const { initialSetData } = useInitApp();
@@ -41,10 +43,7 @@ const App = () => {
             <Route path=":id" element={<InvoiceDetailScreen />} />
           </Route>
 
-          <Route
-            path="terms-and-condition"
-            element={<TermAndConditionScreen />}
-          />
+          <Route path="about" element={<TermAndConditionScreen />} />
 
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
@@ -58,6 +57,8 @@ const App = () => {
       <ProductChoosenModal />
       <InvoiceSettingModal />
       <InvoiceConfirmModal />
+      <InvoiceDeleteConfirm />
+      <PageLoading />
     </BrowserRouter>
   );
 };

@@ -1,10 +1,5 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-  getAllClientsSelector,
-  setDeleteId,
-  setEditedId,
-} from "../../store/clientSlice";
 import { Menu, MenuItem, MenuButton } from "@szhsin/react-menu";
 import {
   defaultTdStyle,
@@ -15,53 +10,51 @@ import {
   defaultSearchStyle,
 } from "../../constants/defaultStyles";
 import ReactPaginate from "react-paginate";
+import { getAllInvoiceSelector, setDeleteId } from "../../store/invoiceSlice";
+import { useNavigate } from "react-router-dom";
+import NumberFormat from "react-number-format";
+import InvoiceIcon from "../Icons/InvoiceIcon";
 import { useAppContext } from "../../context/AppContext";
 import EmptyBar from "../Common/EmptyBar";
 
 // Example items, to simulate fetching from another resources.
 const itemsPerPage = 10;
 const emptySearchForm = {
-  name: "",
-  email: "",
-  mobileNo: "",
+  invoiceNo: "",
+  clientName: "",
 };
 
-function ClientTable({ showAdvanceSearch = false }) {
+function InvoiceTable({ showAdvanceSearch = false }) {
   const { initLoading } = useAppContext();
   const dispatch = useDispatch();
-  const allClients = useSelector(getAllClientsSelector);
+  const allInvoices = useSelector(getAllInvoiceSelector);
+  const navigate = useNavigate();
 
   const [searchForm, setSearchForm] = useState(emptySearchForm);
   const [currentItems, setCurrentItems] = useState(null);
   const [pageCount, setPageCount] = useState(0);
   const [itemOffset, setItemOffset] = useState(0);
 
-  const clients = useMemo(() => {
-    let filterData = allClients.length > 0 ? [...allClients].reverse() : [];
-    if (searchForm.name?.trim()) {
-      filterData = filterData.filter((client) =>
-        client.name.includes(searchForm.name)
+  const invoices = useMemo(() => {
+    let filterData = allInvoices.length > 0 ? [...allInvoices].reverse() : [];
+    if (searchForm.invoiceNo?.trim()) {
+      filterData = filterData.filter((invoice) =>
+        invoice.invoiceNo.includes(searchForm.invoiceNo)
       );
     }
 
-    if (searchForm.email?.trim()) {
-      filterData = filterData.filter((client) =>
-        client.email.includes(searchForm.email)
-      );
-    }
-
-    if (searchForm.mobileNo?.trim()) {
-      filterData = filterData.filter((client) =>
-        client.mobileNo.includes(searchForm.mobileNo)
+    if (searchForm.clientName?.trim()) {
+      filterData = filterData.filter((invoice) =>
+        invoice.clientName.includes(searchForm.clientName)
       );
     }
 
     return filterData;
-  }, [allClients, searchForm]);
+  }, [allInvoices, searchForm]);
 
   // Invoke when user click to request another page.
   const handlePageClick = (event) => {
-    const newOffset = (event.selected * itemsPerPage) % clients.length;
+    const newOffset = (event.selected * itemsPerPage) % invoices.length;
     setItemOffset(newOffset);
   };
 
@@ -74,9 +67,9 @@ function ClientTable({ showAdvanceSearch = false }) {
 
   const handleEdit = useCallback(
     (item) => {
-      dispatch(setEditedId(item.id));
+      navigate("/invoices/" + item.id);
     },
-    [dispatch]
+    [navigate]
   );
 
   const handlerSearchValue = useCallback((event, keyName) => {
@@ -92,9 +85,9 @@ function ClientTable({ showAdvanceSearch = false }) {
   useEffect(() => {
     // Fetch items from another resources.
     const endOffset = itemOffset + itemsPerPage;
-    setCurrentItems(clients.slice(itemOffset, endOffset));
-    setPageCount(Math.ceil(clients.length / itemsPerPage));
-  }, [clients, itemOffset]);
+    setCurrentItems(invoices.slice(itemOffset, endOffset));
+    setPageCount(Math.ceil(invoices.length / itemsPerPage));
+  }, [invoices, itemOffset]);
 
   return (
     <>
@@ -102,6 +95,18 @@ function ClientTable({ showAdvanceSearch = false }) {
         <div className="bg-white rounded-xl px-3 py-3 mb-3">
           <div className="font-title mb-2">Advanced Search</div>
           <div className="flex w-full flex-col sm:flex-row">
+            <div className="mb-2 sm:mb-0 sm:text-left text-default-color flex flex-row font-title flex-1 px-2">
+              <div className="h-12 w-12 rounded-2xl bg-gray-100 mr-2 flex justify-center items-center">
+                <InvoiceIcon className="h-6 w-6 text-gray-400" />
+              </div>
+              <input
+                autoComplete="nope"
+                value={searchForm.invoiceNo}
+                placeholder="Invoice No"
+                className={defaultSearchStyle}
+                onChange={(e) => handlerSearchValue(e, "invoiceNo")}
+              />
+            </div>
             <div className="mb-2 sm:mb-0 sm:text-left text-default-color flex flex-row font-title flex-1 px-2">
               <div className="h-12 w-12 rounded-2xl bg-gray-100 mr-2 flex justify-center items-center">
                 <svg
@@ -119,60 +124,10 @@ function ClientTable({ showAdvanceSearch = false }) {
               </div>
               <input
                 autoComplete="nope"
-                value={searchForm.name}
+                value={searchForm.clientName}
                 placeholder="User Name"
                 className={defaultSearchStyle}
-                onChange={(e) => handlerSearchValue(e, "name")}
-              />
-            </div>
-            <div className="mb-2 sm:mb-0 sm:text-left text-default-color flex flex-row  font-title flex-1 px-2">
-              <div className="h-12 w-12 rounded-2xl bg-gray-100 mr-2 flex justify-center items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <input
-                autoComplete="nope"
-                value={searchForm.email}
-                placeholder="User Email"
-                className={defaultSearchStyle}
-                onChange={(e) => handlerSearchValue(e, "email")}
-              />
-            </div>
-            <div className="mb-2 sm:mb-0 sm:text-left text-default-color flex flex-row  font-title flex-1 px-2">
-              <div className="h-12 w-12 rounded-2xl bg-gray-100 mr-2 flex justify-center items-center">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6 text-gray-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                  strokeWidth={2}
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M12 18h.01M8 21h8a2 2 0 002-2V5a2 2 0 00-2-2H8a2 2 0 00-2 2v14a2 2 0 002 2z"
-                  />
-                </svg>
-              </div>
-              <input
-                autoComplete="nope"
-                value={searchForm.mobileNo}
-                placeholder="Mobile Number"
-                className={defaultSearchStyle}
-                onChange={(e) => handlerSearchValue(e, "mobileNo")}
+                onChange={(e) => handlerSearchValue(e, "clientName")}
               />
             </div>
           </div>
@@ -182,13 +137,16 @@ function ClientTable({ showAdvanceSearch = false }) {
       <div className="sm:bg-white rounded-xl sm:px-3 sm:py-3">
         <div className="hidden sm:flex invisible sm:visible w-full flex-col sm:flex-row">
           <div className="sm:text-left text-default-color font-title flex-1">
-            Name
+            Invoice Name
           </div>
           <div className="sm:text-left text-default-color font-title flex-1">
-            Mobile
+            Client Name
           </div>
           <div className="sm:text-left text-default-color font-title flex-1">
-            Email
+            Status
+          </div>
+          <div className="sm:text-left text-default-color font-title flex-1">
+            Amount
           </div>
           <div className="sm:text-left text-default-color font-title sm:w-11">
             Action
@@ -197,55 +155,64 @@ function ClientTable({ showAdvanceSearch = false }) {
 
         <div>
           {currentItems &&
-            currentItems.map((client) => (
-              <div className={defaultTdWrapperStyle} key={client.id}>
+            currentItems.map((invoice) => (
+              <div className={defaultTdWrapperStyle} key={invoice.id}>
                 <div className={defaultTdStyle}>
-                  <div className={defaultTdContentTitleStyle}>Name</div>
+                  <div className={defaultTdContentTitleStyle}>Invoice Name</div>
                   <div className={defaultTdContent}>
-                    {client.image ? (
-                      <img
-                        className="object-cover h-10 w-10 rounded-2xl"
-                        src={client.image}
-                        alt={client.name}
-                      />
-                    ) : (
-                      <span className="h-10 w-10 rounded-2xl bg-gray-100 flex justify-center items-center">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-6 w-6 text-gray-400"
-                          viewBox="0 0 20 20"
-                          fill="currentColor"
-                        >
-                          <path
-                            fillRule="evenodd"
-                            d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 0010 16a5.986 5.986 0 004.546-2.084A5 5 0 0010 11z"
-                            clipRule="evenodd"
-                          />
-                        </svg>
-                      </span>
-                    )}
+                    <span
+                      className="whitespace-nowrap text-ellipsis overflow-hidden text-blue-500 cursor-pointer"
+                      onClick={() => handleEdit(invoice)}
+                    >
+                      {invoice.invoiceNo}
+                    </span>
+                  </div>
+                </div>
 
-                    <span className="whitespace-nowrap text-ellipsis overflow-hidden pl-1">
-                      {client.name}
-                    </span>
-                  </div>
-                </div>
                 <div className={defaultTdStyle}>
-                  <div className={defaultTdContentTitleStyle}>Mobile</div>
+                  <div className={defaultTdContentTitleStyle}>Client Name</div>
                   <div className={defaultTdContent}>
                     <span className="whitespace-nowrap text-ellipsis overflow-hidden">
-                      {client.mobileNo}
+                      {invoice.clientName}
                     </span>
                   </div>
                 </div>
+
                 <div className={defaultTdStyle}>
-                  <div className={defaultTdContentTitleStyle}>Email</div>
+                  <div className={defaultTdContentTitleStyle}>Status</div>
                   <div className={defaultTdContent}>
-                    <span className="whitespace-nowrap text-ellipsis overflow-hidden">
-                      {client.email}{" "}
+                    <span
+                      className={
+                        "whitespace-nowrap text-ellipsis overflow-hidden px-3 rounded-xl  py-1 " +
+                        (invoice.statusIndex === "2"
+                          ? "bg-red-100 text-red-400"
+                          : invoice.statusIndex === "3"
+                          ? "bg-green-200 text-green-600"
+                          : "bg-gray-100 text-gray-600 ")
+                      }
+                    >
+                      {invoice.statusName}
                     </span>
                   </div>
                 </div>
+
+                <div className={defaultTdStyle}>
+                  <div className={defaultTdContentTitleStyle}>Status</div>
+                  <div className={defaultTdContent + " "}>
+                    <span className="whitespace-nowrap text-ellipsis overflow-hidden ">
+                      <NumberFormat
+                        value={invoice.totalAmount}
+                        className=""
+                        displayType={"text"}
+                        thousandSeparator={true}
+                        renderText={(value, props) => (
+                          <span {...props}>{value}</span>
+                        )}
+                      />
+                    </span>
+                  </div>
+                </div>
+
                 <div className={defaultTdActionStyle}>
                   <div className={defaultTdContentTitleStyle}>Action</div>
                   <div className={defaultTdContent}>
@@ -272,10 +239,10 @@ function ClientTable({ showAdvanceSearch = false }) {
                       }
                       transition
                     >
-                      <MenuItem onClick={() => handleEdit(client)}>
-                        Edit
+                      <MenuItem onClick={() => handleEdit(invoice)}>
+                        Detail
                       </MenuItem>
-                      <MenuItem onClick={() => handleDelete(client)}>
+                      <MenuItem onClick={() => handleDelete(invoice)}>
                         Delete
                       </MenuItem>
                     </Menu>
@@ -284,11 +251,11 @@ function ClientTable({ showAdvanceSearch = false }) {
               </div>
             ))}
 
-          {clients.length <= 0 && !initLoading && (
-            <EmptyBar title="Client Data" />
+          {invoices.length <= 0 && !initLoading && (
+            <EmptyBar title={"Invoice"} />
           )}
 
-          {clients.length > 0 && (
+          {invoices.length > 0 && (
             <ReactPaginate
               className="inline-flex items-center -space-x-px mt-2"
               previousLinkClassName="py-2 px-3 ml-0 leading-tight text-gray-500 bg-white rounded-l-lg border border-gray-300 hover:bg-gray-100 hover:text-gray-700 dark:bg-gray-800 dark:border-gray-700 dark:text-gray-400 dark:hover:bg-gray-700 dark:hover:text-white"
@@ -311,4 +278,4 @@ function ClientTable({ showAdvanceSearch = false }) {
   );
 }
 
-export default ClientTable;
+export default InvoiceTable;

@@ -6,10 +6,17 @@ import LottiePersons from "../LotiIcon/LottiePersons";
 import { useSelector } from "react-redux";
 import { getAllClientsSelector } from "../../store/clientSlice";
 import { getAllProductSelector } from "../../store/productSlice";
+import {
+  getAllInvoiceSelector,
+  getTotalBalance,
+} from "../../store/invoiceSlice";
+import NumberFormat from "react-number-format";
 
 function DashboardWidgets() {
   const clients = useSelector(getAllClientsSelector);
   const products = useSelector(getAllProductSelector);
+  const totalBalance = useSelector(getTotalBalance);
+  const allInvoices = useSelector(getAllInvoiceSelector);
 
   return (
     <>
@@ -23,7 +30,15 @@ function DashboardWidgets() {
                 <LottieMoney loop className="h-20" />
               </div>
               {/* Icon Finished */}
-              <div className="text-2xl mr-2">100,000</div>
+              <div className="text-2xl mr-2">
+                <NumberFormat
+                  value={totalBalance}
+                  className=""
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  renderText={(value, props) => <span {...props}>{value}</span>}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -36,7 +51,15 @@ function DashboardWidgets() {
                 <LottieProduct loop className="h-20" />
               </div>
               {/* Icon Finished */}
-              <div className="text-2xl mr-2">{products?.length}</div>
+              <div className="text-2xl mr-2">
+                <NumberFormat
+                  value={products?.length}
+                  className=""
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  renderText={(value, props) => <span {...props}>{value}</span>}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -49,7 +72,15 @@ function DashboardWidgets() {
                 <LottieInvoice loop className="h-20" />
               </div>
               {/* Icon Finished */}
-              <div className="text-2xl mr-2">100,000</div>
+              <div className="text-2xl mr-2">
+                <NumberFormat
+                  value={allInvoices?.length}
+                  className=""
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  renderText={(value, props) => <span {...props}>{value}</span>}
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -62,7 +93,15 @@ function DashboardWidgets() {
                 <LottiePersons loop className="h-20" />
               </div>
               {/* Icon Finished */}
-              <div className="text-2xl mr-2">{clients?.length}</div>
+              <div className="text-2xl mr-2">
+                <NumberFormat
+                  value={clients?.length}
+                  className=""
+                  displayType={"text"}
+                  thousandSeparator={true}
+                  renderText={(value, props) => <span {...props}>{value}</span>}
+                />
+              </div>
             </div>
           </div>
         </div>

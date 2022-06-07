@@ -11,23 +11,47 @@ function InvoiceTopBar({
   onClickSetting,
   onClickExport,
   onClickDownloadImg,
+  onClickBack,
 }) {
   return (
     <div className="bg-white rounded-xl px-3 py-3">
       <div className="flex flex-col flex-wrap sm:flex-row justify-between">
-        <div className="w-full sm:w-1/2 md:w-1/4 my-1 sm:my-1 md:my-0 px-1">
-          <Button size="sm" block={1} outlined={1} onClick={onClickViewAs}>
-            {!viewMode ? (
+        <div className="w-full sm:w-1/2 md:w-1/4 my-1 sm:my-1 md:my-0 px-1 flex flex-row">
+          <div className="w-30 mr-3">
+            <Button size="sm" block={1} onClick={onClickBack}>
               <>
-                <EyeOpenIcon className="h-4 w-4" style={IconStyle} /> View Mode
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d={"M15 19l-7-7 7-7"}
+                  />
+                </svg>
               </>
-            ) : (
-              <>
-                <PencilIcon className="h-4 w-4" style={IconStyle} /> Editing
-                Mode
-              </>
-            )}
-          </Button>
+            </Button>
+          </div>
+          <div className="flex-1">
+            <Button size="sm" block={1} outlined={1} onClick={onClickViewAs}>
+              {!viewMode ? (
+                <>
+                  <EyeOpenIcon className="h-4 w-4" style={IconStyle} /> View
+                  Mode
+                </>
+              ) : (
+                <>
+                  <PencilIcon className="h-4 w-4" style={IconStyle} /> Editing
+                  Mode
+                </>
+              )}
+            </Button>
+          </div>
         </div>
         <div className="w-full sm:w-1/2 md:w-1/4 my-1 sm:my-1 md:my-0 px-1">
           <Button size="sm" block={1} outlined={1} onClick={onClickSetting}>

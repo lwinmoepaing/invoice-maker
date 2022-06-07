@@ -60,7 +60,7 @@ function Navbar() {
         {showNavbar && <>&nbsp;</>}
         {!showNavbar && (
           <motion.div
-            className=" relative font-bold font-title text-2xl p-2 flex flex-row justify-center items-center"
+            className=" relative font-bold font-title text-2xl px-2 flex flex-row justify-center items-center"
             initial={{
               translateX: "10vw",
               opacity: 0.8,

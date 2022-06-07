@@ -7,7 +7,7 @@ import Button from "../components/Button/Button";
 import QuickEditCompany from "../components/Dashboard/QuickEditCompany";
 import QuickAddClient from "../components/Dashboard/QuickAddClient";
 import ClientTable from "../components/Clients/ClientTable";
-import ProductTable from "../components/Product/ProductTable";
+import InvoiceTable from "../components/Invoice/InvoiceTable";
 
 function DashboardScreen() {
   const navigate = useNavigate();
@@ -25,10 +25,10 @@ function DashboardScreen() {
         <div className="w-full lg:w-4/6 pl-4 pr-4 sm:pl-4 sm:pr-0 mb-4 sm:mb-1">
           <DashboardWidgets />
           <div className="mt-1">
-            <ClientTable />
+            <InvoiceTable />
           </div>
           <div className="mt-4">
-            <ProductTable />
+            <ClientTable />
           </div>
         </div>
         <div className="w-full lg:w-2/6 pl-4 pr-4 sm:pl-4 sm:pr-2">

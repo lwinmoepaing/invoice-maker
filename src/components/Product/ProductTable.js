@@ -17,6 +17,8 @@ import {
 import ReactPaginate from "react-paginate";
 import ProductIcon from "../Icons/ProductIcon";
 import ProductIDIcon from "../Icons/ProductIDIcon";
+import EmptyBar from "../Common/EmptyBar";
+import { useAppContext } from "../../context/AppContext";
 
 // Example items, to simulate fetching from another resources.
 const itemsPerPage = 10;
@@ -26,6 +28,7 @@ const emptySearchForm = {
 };
 
 function ProductTable({ showAdvanceSearch = false }) {
+  const { initLoading } = useAppContext();
   const dispatch = useDispatch();
   const allProducts = useSelector(getAllProductSelector);
 
@@ -217,6 +220,8 @@ function ProductTable({ showAdvanceSearch = false }) {
                 </div>
               </div>
             ))}
+
+          {products.length <= 0 && !initLoading && <EmptyBar />}
 
           {products.length > 0 && (
             <ReactPaginate

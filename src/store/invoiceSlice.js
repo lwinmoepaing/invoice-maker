@@ -19,7 +19,7 @@ const initialState = {
   colors: colorData,
   images: imageData,
   data: [],
-  detailList: {},
+  detailList: [],
   deletedID: null,
   currentEditedID: null,
   newForm: {
@@ -27,7 +27,7 @@ const initialState = {
     invoiceNo: "",
     statusIndex: "1",
     statusName: "Draft",
-    totalAmount: 0,
+    totalAmount: 1200,
     color: colorData[0],
     backgroundImage: imageData[0],
     dueDate: new Date(),
@@ -63,21 +63,22 @@ export const invoiceSlice = createSlice({
     },
 
     setAllInvoiceDetailList: (state, action) => {
-      state.detailList = { ...action.payload };
+      state.detailList = [...action.payload];
     },
 
     setNewInvoices: (state, action) => {
       const { payload } = action;
 
+      const id = nanoid();
+
       const {
-        id,
         invoiceNo,
         statusIndex,
         statusName,
         totalAmount,
         dueDate,
         createdDate,
-        clientName,
+        clientDetail,
       } = payload;
 
       const newInvoice = {
@@ -88,15 +89,16 @@ export const invoiceSlice = createSlice({
         totalAmount,
         dueDate,
         createdDate,
-        clientName,
+        clientName: clientDetail?.name,
       };
 
       const updateState = [...state.data, newInvoice];
       state.data = updateState;
       localforage.setItem(INVOICES_KEY, updateState);
 
-      state.detailList[newInvoice.id] = { ...payload };
-      localforage.setItem(INVOICE_DETAILS, { ...state.detailList });
+      const newDetailList = [...state.detailList, { ...payload, id }];
+      state.detailList = newDetailList;
+      localforage.setItem(INVOICE_DETAILS, newDetailList);
     },
 
     setDefaultColor: (state, action) => {
@@ -124,10 +126,14 @@ export const invoiceSlice = createSlice({
         (invoice) => invoice.id !== state.deletedID
       );
       state.data = newDatas;
-      delete state.detailList[state.deletedID];
+
+      const newDetails = state.detailList.filter(
+        (invoice) => invoice.id !== state.deletedID
+      );
+
       state.deletedID = null;
       localforage.setItem(INVOICES_KEY, newDatas);
-      localforage.setItem(INVOICE_DETAILS, { ...state.detailList });
+      localforage.setItem(INVOICE_DETAILS, newDetails);
     },
 
     onConfirmEditInvoice: (state, action) => {
@@ -155,6 +161,48 @@ export const invoiceSlice = createSlice({
       localforage.setItem(INVOICE_FORM_KEY, { ...state.newForm });
     },
 
+    updateExisitingInvoiceForm: (state, action) => {
+      const {
+        id,
+        invoiceNo,
+        statusIndex,
+        statusName,
+        totalAmount,
+        dueDate,
+        createdDate,
+        clientDetail,
+      } = action.payload;
+
+      const findIndexOfList = state.data.findIndex(
+        (product) => product.id === id
+      );
+
+      const newInvoice = {
+        id,
+        invoiceNo,
+        statusIndex,
+        statusName,
+        totalAmount,
+        dueDate,
+        createdDate,
+        clientName: clientDetail?.name,
+      };
+
+      if (findIndexOfList !== -1) {
+        state.data[findIndexOfList] = { ...newInvoice };
+      }
+      const findIndexOfDetail = state.detailList.findIndex(
+        (product) => product.id === id
+      );
+
+      if (findIndexOfDetail !== -1) {
+        state.detailList[findIndexOfDetail] = { ...action.payload };
+      }
+
+      localforage.setItem(INVOICES_KEY, [...state.data]);
+      localforage.setItem(INVOICE_DETAILS, [...state.detailList]);
+    },
+
     setSettingModalOpen: (state, action) => {
       state.settingOpen = action.payload;
     },
@@ -171,6 +219,7 @@ export const invoiceSlice = createSlice({
 
 export const {
   setAllInvoice,
+  setAllInvoiceDetailList,
   setNewInvoices,
   setDefaultColor,
   setDefaultBackground,
@@ -183,6 +232,7 @@ export const {
   onConfirmEditInvoice,
   updateNewInvoiceForm,
   updateNewInvoiceFormField,
+  updateExisitingInvoiceForm,
 } = invoiceSlice.actions;
 
 export const getAllInvoiceSelector = (state) => state.invoices.data;
@@ -194,6 +244,8 @@ export const getAllImageSelector = (state) => state.invoices.images;
 export const getCurrentBGImage = (state) => state.invoices.defaultBgImage;
 
 export const getCurrentColor = (state) => state.invoices.defaultColor;
+
+export const getAllInvoiceDetailSelector = (state) => state.invoices.detailList;
 
 export const getInvoiceDetailByID = (id) => (state) =>
   state.invoices.detailList.find((detail) => detail.id === id);
@@ -208,5 +260,10 @@ export const getIsInvoiceConfirmModal = (state) =>
   state.invoices.isConfirmModal;
 
 export const getIsConfirm = (state) => state.invoices.isConfirm;
+
+export const getTotalBalance = (state) =>
+  state.invoices.data.reduce((prev, next) => {
+    return prev + (next.totalAmount || 0);
+  }, 0);
 
 export default invoiceSlice.reducer;

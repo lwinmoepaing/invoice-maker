@@ -54,10 +54,7 @@ function Sidebar() {
     }
   }, [showNavbar, toggleNavbar]);
 
-  const isTermAndConditionRoute = useMemo(
-    () => pathname === "/terms-and-condition",
-    [pathname]
-  );
+  const aboutRoute = useMemo(() => pathname === "/about", [pathname]);
 
   return (
     <>
@@ -148,11 +145,11 @@ function Sidebar() {
         <hr />
 
         <div className="my-4">
-          <NavLink to={"terms-and-condition"}>
+          <NavLink to={"about"}>
             <motion.span
               className="block px-4 py-2 rounded-md flex text-default-color"
               style={{
-                color: isTermAndConditionRoute ? "rgb(14 136 14)" : "#777",
+                color: aboutRoute ? "rgb(14 136 14)" : "#777",
               }}
               whileHover={{
                 scale: [1.03, 1, 1.03, 1, 1.03, 1, 1.03, 1],
@@ -168,7 +165,7 @@ function Sidebar() {
               whileTap={{ scale: 0.9 }}
             >
               <SecurityIcon className="h-6 w-6 mr-4" />
-              Terms And Condition
+              About Me
             </motion.span>
           </NavLink>
         </div>

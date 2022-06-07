@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import domtoimage from "dom-to-image";
 import InvoiceTopBar from "../../components/Invoice/InvoiceTopBar";
 import {
+  getAllInvoiceDetailSelector,
   getCurrentBGImage,
   getCurrentColor,
   getInvoiceNewForm,
@@ -22,20 +23,17 @@ import {
   setDefaultBackground,
   setDefaultColor,
   setIsConfirm,
+  setNewInvoices,
   setSettingModalOpen,
+  updateExisitingInvoiceForm,
   updateNewInvoiceForm,
-  updateNewInvoiceFormField,
 } from "../../store/invoiceSlice";
 import {
   getSelectedClient,
   setOpenClientSelector,
 } from "../../store/clientSlice";
 import { getCompanyData } from "../../store/companySlice";
-import {
-  defaultInputSmInvalidStyle,
-  defaultInputSmStyle,
-  IconStyle,
-} from "../../constants/defaultStyles";
+import { defaultInputSmStyle, IconStyle } from "../../constants/defaultStyles";
 import Button from "../../components/Button/Button";
 import ClientPlusIcon from "../../components/Icons/ClientPlusIcon";
 import InvoiceIcon from "../../components/Icons/InvoiceIcon";
@@ -51,10 +49,13 @@ import TaxesIcon from "../../components/Icons/TaxesIcon";
 import DollarIcon from "../../components/Icons/DollarIcon";
 import CheckCircleIcon from "../../components/Icons/CheckCircleIcon";
 import SecurityIcon from "../../components/Icons/SecurityIcon";
-
-const emptyValidForm = {
-  invoiceNo: false,
-};
+import {
+  getTotalTaxesWithPercent,
+  sumProductTotal,
+  sumTotalAmount,
+  sumTotalTaxes,
+} from "../../utils/match";
+import PageTitle from "../../components/Common/PageTitle";
 
 function InvoiceDetailScreen(props) {
   const { initLoading, showNavbar, toggleNavbar, setEscapeOverflow } =
@@ -78,6 +79,7 @@ function InvoiceDetailScreen(props) {
   });
 
   const invoiceNewForm = useSelector(getInvoiceNewForm);
+  const allInvoiceDetails = useSelector(getAllInvoiceDetailSelector);
   const company = useSelector(getCompanyData);
   const selectedClient = useSelector(getSelectedClient);
   const selectedProduct = useSelector(getSelectedProduct);
@@ -86,8 +88,6 @@ function InvoiceDetailScreen(props) {
   const isConfirm = useSelector(getIsConfirm);
 
   const [invoiceForm, setInvoiceForm] = useState(null);
-  const [validForm, setValidForm] = useState(emptyValidForm);
-  const [isTouched] = useState(false);
   const [isViewMode, setIsViewMode] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [statusData, setStatusData] = useState({
@@ -137,12 +137,26 @@ function InvoiceDetailScreen(props) {
   }, [setEscapeOverflow, showNavbar, toggleNavbar]);
 
   const toggleViewMode = useCallback(() => {
+    if (invoiceForm.statusIndex !== "1" && isViewMode) {
+      toast.warn("You can only edit on Draft Mode", {
+        position: "bottom-center",
+        autoClose: 3000,
+      });
+      return;
+    }
     setIsViewMode((prev) => !prev);
-  }, []);
+  }, [invoiceForm, isViewMode]);
 
   const openSettingModal = useCallback(() => {
+    if (invoiceForm.statusIndex !== "1" && isViewMode) {
+      toast.warn("You can only change Setting on Draft Mode", {
+        position: "bottom-center",
+        autoClose: 3000,
+      });
+      return;
+    }
     dispatch(setSettingModalOpen(true));
-  }, [dispatch]);
+  }, [dispatch, invoiceForm, isViewMode]);
 
   const openChooseClient = useCallback(() => {
     dispatch(setOpenClientSelector(true));
@@ -162,86 +176,44 @@ function InvoiceDetailScreen(props) {
     };
 
     setInvoiceForm((prev) => {
-      const isSomeTaxes = prev.taxes.some((form) => form.type === "percentage");
+      let updatedData = { ...prev };
       const updateProducts = [...prev.products, emptyProduct];
-      let updatedData = { ...prev, products: updateProducts };
-
-      if (isSomeTaxes) {
-        let updatedTaxes = [...prev.taxes];
-        const isFindIndex = prev.taxes.findIndex(
-          (tax) => tax.type === "percentage"
-        );
-        const subTotalAmount =
-          updateProducts?.reduce((prev, product) => {
-            const strValue = (product.quantity * product.amount)
-              .toFixed(4)
-              .toString()
-              .slice(0, -2);
-
-            return parseFloat(strValue) + prev;
-          }, 0) || 0;
-
-        const amount = (updatedTaxes[isFindIndex].value / 100) * subTotalAmount;
-
-        updatedTaxes[isFindIndex] = {
-          ...updatedTaxes[isFindIndex],
-          amount,
-        };
-
-        updatedData.taxes = [...updatedTaxes];
-      }
-
+      const subTotalAmount = sumProductTotal(updateProducts);
+      const updateTaxes = getTotalTaxesWithPercent(prev.taxes, subTotalAmount);
+      updatedData.products = updateProducts;
+      updatedData.taxes = updateTaxes;
+      updatedData.totalAmount = sumTotalAmount(
+        subTotalAmount,
+        sumTotalTaxes(updateTaxes)
+      );
       return updatedData;
     });
   }, []);
 
   const onDeleteProduct = useCallback((prodID) => {
     setInvoiceForm((prev) => {
-      const isSomeTaxes = prev.taxes.some((form) => form.type === "percentage");
+      let updatedData = { ...prev };
       const updateProducts = prev.products.filter((prod) => prod.id !== prodID);
-      let updatedData = { ...prev, products: updateProducts };
-
-      if (isSomeTaxes) {
-        let updatedTaxes = [...prev.taxes];
-        const isFindIndex = prev.taxes.findIndex(
-          (tax) => tax.type === "percentage"
-        );
-        const subTotalAmount =
-          updateProducts?.reduce((prev, product) => {
-            const strValue = (product.quantity * product.amount)
-              .toFixed(4)
-              .toString()
-              .slice(0, -2);
-
-            return parseFloat(strValue) + prev;
-          }, 0) || 0;
-
-        const amount = (updatedTaxes[isFindIndex].value / 100) * subTotalAmount;
-
-        updatedTaxes[isFindIndex] = {
-          ...updatedTaxes[isFindIndex],
-          amount,
-        };
-
-        updatedData.taxes = [...updatedTaxes];
-      }
+      const subTotalAmount = sumProductTotal(updateProducts);
+      const updateTaxes = getTotalTaxesWithPercent(prev.taxes, subTotalAmount);
+      updatedData.products = updateProducts;
+      updatedData.taxes = updateTaxes;
+      updatedData.totalAmount = sumTotalAmount(
+        subTotalAmount,
+        sumTotalTaxes(updateTaxes)
+      );
       return updatedData;
     });
   }, []);
 
-  const handlerInvoiceValue = useCallback(
-    (event, keyName) => {
-      const value =
-        typeof event === "string" ? new Date(event) : event?.target?.value;
+  const handlerInvoiceValue = useCallback((event, keyName) => {
+    const value =
+      typeof event === "string" ? new Date(event) : event?.target?.value;
 
-      setInvoiceForm((prev) => {
-        return { ...prev, [keyName]: value };
-      });
-
-      dispatch(updateNewInvoiceFormField({ key: keyName, value }));
-    },
-    [dispatch]
-  );
+    setInvoiceForm((prev) => {
+      return { ...prev, [keyName]: value };
+    });
+  }, []);
 
   const handlerProductValue = useCallback(
     (event, keyName, productID) => {
@@ -282,35 +254,16 @@ function InvoiceDetailScreen(props) {
       }
 
       if (keyName === "quantity" || keyName === "amount") {
-        const isSomeTaxes = invoiceForm.taxes.some(
-          (form) => form.type === "percentage"
+        const subTotalAmount = sumProductTotal(updateProducts);
+        const updateTaxes = getTotalTaxesWithPercent(
+          invoiceForm.taxes,
+          subTotalAmount
         );
-
-        if (isSomeTaxes) {
-          let updatedTaxes = [...invoiceForm.taxes];
-          const isFindIndex = invoiceForm.taxes.findIndex(
-            (tax) => tax.type === "percentage"
-          );
-          const subTotalAmount =
-            updateProducts?.reduce((prev, product) => {
-              const strValue = (product.quantity * product.amount)
-                .toFixed(4)
-                .toString()
-                .slice(0, -2);
-
-              return parseFloat(strValue) + prev;
-            }, 0) || 0;
-
-          const amount =
-            (updatedTaxes[isFindIndex].value / 100) * subTotalAmount;
-
-          updatedTaxes[isFindIndex] = {
-            ...updatedTaxes[isFindIndex],
-            amount,
-          };
-
-          updatedData.taxes = [...updatedTaxes];
-        }
+        updatedData.taxes = updateTaxes;
+        updatedData.totalAmount = sumTotalAmount(
+          subTotalAmount,
+          sumTotalTaxes(updateTaxes)
+        );
       }
       setInvoiceForm(updatedData);
     },
@@ -349,59 +302,43 @@ function InvoiceDetailScreen(props) {
 
       setInvoiceForm((prev) => {
         let taxes = [...prev.taxes];
+
         if (keyName === "value") {
-          const subTotalAmount =
-            prev.products?.reduce((prev, product) => {
-              const strValue = (product.quantity * product.amount)
-                .toFixed(4)
-                .toString()
-                .slice(0, -2);
-
-              return parseFloat(strValue) + prev;
-            }, 0) || 0;
-
+          const subTotalAmount = sumProductTotal(prev.products);
           const amount = (value / 100) * subTotalAmount;
           taxes[isFindIndex] = {
             ...taxes[isFindIndex],
             [keyName]: value,
             amount: currentTax.type !== "percentage" ? value : amount,
           };
+          const totalAmount = sumTotalAmount(
+            subTotalAmount,
+            sumTotalTaxes(taxes)
+          );
+          return { ...prev, taxes: taxes, totalAmount: totalAmount };
         } else {
           taxes[isFindIndex] = {
             ...taxes[isFindIndex],
             [keyName]: value,
           };
+          return { ...prev, taxes: taxes };
         }
-        return { ...prev, taxes: taxes };
       });
     },
     [invoiceForm]
   );
 
-  const handlerInvoiceClientValue = useCallback(
-    (event, keyName) => {
-      const value =
-        typeof event === "string" ? new Date(event) : event?.target?.value;
+  const handlerInvoiceClientValue = useCallback((event, keyName) => {
+    const value =
+      typeof event === "string" ? new Date(event) : event?.target?.value;
 
-      setInvoiceForm((prev) => {
-        return {
-          ...prev,
-          clientDetail: { ...prev.clientDetail, [keyName]: value },
-        };
-      });
-
-      dispatch(
-        updateNewInvoiceFormField({
-          key: "clientDetail",
-          value: {
-            ...invoiceForm.clientDetail,
-            [keyName]: value,
-          },
-        })
-      );
-    },
-    [dispatch, invoiceForm]
-  );
+    setInvoiceForm((prev) => {
+      return {
+        ...prev,
+        clientDetail: { ...prev.clientDetail, [keyName]: value },
+      };
+    });
+  }, []);
 
   // Calculation for Showing
   const subTotal = useMemo(() => {
@@ -412,14 +349,7 @@ function InvoiceDetailScreen(props) {
     if (!invoiceForm?.products) {
       return 0;
     }
-    return invoiceForm.products.reduce((prev, product) => {
-      const strValue = (product.quantity * product.amount)
-        .toFixed(4)
-        .toString()
-        .slice(0, -2);
-
-      return parseFloat(strValue) + prev;
-    }, 0);
+    return sumProductTotal(invoiceForm.products);
   }, [invoiceForm]);
 
   const totalPercentTax = useMemo(() => {
@@ -442,22 +372,6 @@ function InvoiceDetailScreen(props) {
       : 0;
   }, [invoiceForm]);
 
-  const totalAmount = useMemo(() => {
-    const taxes =
-      invoiceForm?.taxes
-        ?.filter((tax) => tax.type !== "percentage")
-        ?.reduce((prev, tx) => {
-          return prev + parseFloat(tx.amount);
-        }, 0) || 0;
-
-    const total =
-      parseFloat(taxes) + parseFloat(subTotal) + parseFloat(totalPercentTax);
-
-    return Number.isInteger(total)
-      ? total
-      : total?.toFixed(4)?.toString()?.slice(0, -2);
-  }, [subTotal, totalPercentTax, invoiceForm]);
-
   const addPercentageTax = useCallback(() => {
     const isSomeTaxes = invoiceForm.taxes.some(
       (form) => form.type === "percentage"
@@ -471,32 +385,46 @@ function InvoiceDetailScreen(props) {
       return;
     }
 
-    const amount = (10 / 100) * subTotal;
-
-    const percentageTax = {
-      id: nanoid(),
-      title: "Tax %",
-      type: "percentage",
-      value: 10,
-      amount,
-    };
-
     setInvoiceForm((prev) => {
-      return { ...prev, taxes: [percentageTax, ...prev.taxes] };
+      const subTotalAmount = sumProductTotal(prev.products);
+      const amount = (10 / 100) * subTotalAmount;
+      const percentageTax = {
+        id: nanoid(),
+        title: "Tax %",
+        type: "percentage",
+        value: 10,
+        amount,
+      };
+      const updateTaxes = [percentageTax, ...prev.taxes];
+      const totalAmount = sumTotalAmount(
+        subTotalAmount,
+        sumTotalTaxes(updateTaxes)
+      );
+
+      return {
+        ...prev,
+        taxes: updateTaxes,
+        totalAmount: totalAmount,
+      };
     });
-  }, [invoiceForm, subTotal]);
+  }, [invoiceForm]);
 
   const addEmptyTax = useCallback(() => {
-    const emptyTax = {
-      id: nanoid(),
-      title: "Extra Fees",
-      type: "flat",
-      value: 1,
-      amount: 1,
-    };
-
     setInvoiceForm((prev) => {
-      return { ...prev, taxes: [...prev.taxes, emptyTax] };
+      const subTotalAmount = sumProductTotal(prev.products);
+      const emptyTax = {
+        id: nanoid(),
+        title: "Extra Fees",
+        type: "flat",
+        value: 1,
+        amount: 1,
+      };
+      const updateTaxes = [...prev.taxes, emptyTax];
+      const totalAmount = sumTotalAmount(
+        subTotalAmount,
+        sumTotalTaxes(updateTaxes)
+      );
+      return { ...prev, taxes: updateTaxes, totalAmount };
     });
   }, []);
 
@@ -504,6 +432,12 @@ function InvoiceDetailScreen(props) {
     setInvoiceForm((prev) => {
       const updateTaxes = prev.taxes.filter((prod) => prod.id !== taxID);
       let updatedData = { ...prev, taxes: updateTaxes };
+      const subTotalAmount = sumProductTotal(prev.products);
+      const totalAmount = sumTotalAmount(
+        subTotalAmount,
+        sumTotalTaxes(updateTaxes)
+      );
+      updatedData.totalAmount = totalAmount;
       return updatedData;
     });
   }, []);
@@ -519,6 +453,10 @@ function InvoiceDetailScreen(props) {
     [dispatch]
   );
 
+  const goInvoiceList = useCallback(() => {
+    navigate("/invoices");
+  }, [navigate]);
+
   useEffect(() => {
     if (selectedProduct !== null) {
       // If Choosen Exisiting Client And This form is news
@@ -532,42 +470,21 @@ function InvoiceDetailScreen(props) {
       };
 
       setInvoiceForm((prev) => {
-        const isSomeTaxes = prev?.taxes?.some(
-          (form) => form.type === "percentage"
-        );
+        let updatedData = { ...prev };
         const updateProducts = [...prev.products, newProduct];
-        let updatedData = { ...prev, products: updateProducts };
-
-        if (isSomeTaxes) {
-          let updatedTaxes = [...prev.taxes];
-          const isFindIndex = prev.taxes.findIndex(
-            (tax) => tax.type === "percentage"
-          );
-          const subTotalAmount =
-            updateProducts?.reduce((prev, product) => {
-              const strValue = (product.quantity * product.amount)
-                .toFixed(4)
-                .toString()
-                .slice(0, -2);
-
-              return parseFloat(strValue) + prev;
-            }, 0) || 0;
-
-          const amount =
-            (updatedTaxes[isFindIndex].value / 100) * subTotalAmount;
-
-          updatedTaxes[isFindIndex] = {
-            ...updatedTaxes[isFindIndex],
-            amount,
-          };
-
-          updatedData.taxes = [...updatedTaxes];
-        }
-
+        const subTotalAmount = sumProductTotal(updateProducts);
+        const updateTaxes = getTotalTaxesWithPercent(
+          prev.taxes,
+          subTotalAmount
+        );
+        updatedData.products = updateProducts;
+        updatedData.taxes = updateTaxes;
+        updatedData.totalAmount = sumTotalAmount(
+          subTotalAmount,
+          sumTotalTaxes(updateTaxes)
+        );
         return updatedData;
       });
-
-      // IF Choosen And If Draft Form
     }
   }, [selectedProduct]);
 
@@ -585,13 +502,32 @@ function InvoiceDetailScreen(props) {
 
         dispatch(setDefaultBackground(invoiceNewForm.backgroundImage));
         dispatch(setDefaultColor(invoiceNewForm.color));
-      } else {
+      } else if (params.id !== "new" && invoiceForm === null) {
         // Else Exisiting Invoice,
         // We'll Set Company Data
         // But if it's Draft, we'll currenty set the data for Current Company Data
         // Because it's still Draft State
+        const getInvoiceDetail = allInvoiceDetails.find(
+          (inv) => inv.id === params.id
+        );
+
         // If not Found Redirect Back
         // navigate("/");
+        if (!getInvoiceDetail) {
+          navigate("/invoices");
+          return;
+        } else {
+          setInvoiceForm({
+            ...getInvoiceDetail,
+            companyDetail: { ...getInvoiceDetail.companyDetail },
+            dueDate: new Date(getInvoiceDetail.dueDate),
+            createdDate: new Date(getInvoiceDetail.createdDate),
+          });
+
+          dispatch(setDefaultBackground(getInvoiceDetail.backgroundImage));
+          dispatch(setDefaultColor(getInvoiceDetail.color));
+          setIsViewMode(true);
+        }
       }
     }
   }, [
@@ -602,43 +538,29 @@ function InvoiceDetailScreen(props) {
     initLoading,
     company,
     dispatch,
+    allInvoiceDetails,
   ]);
-
-  useEffect(() => {
-    setValidForm((prev) => ({
-      invoiceNo: invoiceForm?.invoiceNo?.trim() ? true : false,
-    }));
-  }, [invoiceForm]);
 
   useEffect(() => {
     if (selectedClient !== null) {
       // If Choosen Exisiting Client And This form is news
-      if (params.id === "new") {
-        setInvoiceForm((prev) => {
-          return {
-            ...prev,
-            clientDetail: { ...selectedClient },
-          };
-        });
-
-        dispatch(
-          updateNewInvoiceFormField({
-            key: "clientDetail",
-            value: { ...selectedClient },
-          })
-        );
-      }
-
-      // IF Choosen And If Draft Form
+      setInvoiceForm((prev) => {
+        return {
+          ...prev,
+          clientDetail: { ...selectedClient },
+        };
+      });
     }
-  }, [selectedClient, params, dispatch]);
+  }, [selectedClient]);
 
   useEffect(() => {
     // if (invoiceForm.produ)
     if (params.id === "new" && invoiceForm !== null) {
       dispatch(updateNewInvoiceForm(invoiceForm));
+    } else if (params.id !== "new" && invoiceForm !== null) {
+      dispatch(updateExisitingInvoiceForm(invoiceForm));
     }
-  }, [params, invoiceForm, dispatch]);
+  }, [dispatch, invoiceForm, params]);
 
   useEffect(() => {
     if (initLoading === false) {
@@ -654,18 +576,55 @@ function InvoiceDetailScreen(props) {
   useEffect(() => {
     if (isConfirm) {
       const isNew = params.id === "new";
-      dispatch(setIsConfirm(false));
-      console.log(statusData);
-    } else {
-      console.log("Confirmation : false");
+      if (isNew) {
+        dispatch(setIsConfirm(false));
+        dispatch(setNewInvoices({ ...invoiceForm, ...statusData }));
+        setInvoiceForm({
+          ...invoiceForm,
+          products: [
+            {
+              amount: 1200,
+              id: nanoid(),
+              name: "productName",
+              productID: "",
+              quantity: 1,
+            },
+          ],
+          taxes: [],
+          totalAmount: 1200,
+        });
+
+        setTimeout(() => {
+          navigate("/invoices");
+        }, 300);
+      } else {
+        // Update Exisiting Invoice
+        dispatch(setIsConfirm(false));
+        setIsViewMode(true);
+        setInvoiceForm({
+          ...invoiceForm,
+          ...statusData,
+        });
+      }
     }
-  }, [dispatch, isConfirm, params, statusData]);
+  }, [dispatch, invoiceForm, isConfirm, navigate, params, statusData]);
 
   return (
     <div>
-      {isConfirm?.tostring?.()}
       <div className="p-4">
+        <PageTitle
+          title={
+            <>
+              {params.id === "new"
+                ? "New Invoice"
+                : `Invoice Detail ${invoiceForm?.statusName}`}
+            </>
+          }
+        />
+      </div>
+      <div className="px-4 pb-3">
         <InvoiceTopBar
+          onClickBack={goInvoiceList}
           viewMode={isViewMode}
           onClickViewAs={toggleViewMode}
           onClickSetting={openSettingModal}
@@ -841,11 +800,7 @@ function InvoiceDetailScreen(props) {
                     <input
                       autoComplete="nope"
                       placeholder="Invoice No"
-                      className={
-                        !validForm.invoiceNo && isTouched
-                          ? defaultInputSmInvalidStyle + " text-right"
-                          : defaultInputSmStyle + " text-right"
-                      }
+                      className={defaultInputSmStyle + " text-right"}
                       value={invoiceForm.invoiceNo}
                       onChange={(e) => handlerInvoiceValue(e, "invoiceNo")}
                     />
@@ -1389,7 +1344,7 @@ function InvoiceDetailScreen(props) {
                   }
                 >
                   <NumberFormat
-                    value={totalAmount}
+                    value={invoiceForm?.totalAmount}
                     className=""
                     displayType={"text"}
                     thousandSeparator={true}
@@ -1411,40 +1366,46 @@ function InvoiceDetailScreen(props) {
         </div>
       )}
 
-      {invoiceForm && (
+      {invoiceForm && invoiceForm?.statusIndex !== "3" && (
         <div className="px-4 pt-3">
           <div className="bg-white rounded-xl px-3 py-3">
-            <div className="flex flex-col flex-wrap sm:flex-row justify-between">
-              <div className="w-full sm:w-1/2 md:w-1/3 my-1 sm:my-1 md:my-0 px-1">
-                <Button
-                  outlined={1}
-                  size="sm"
-                  block={1}
-                  secondary={1}
-                  onClick={() => saveAs("Draft")}
-                >
-                  <CheckCircleIcon className="h-5 w-5 mr-1" /> Save As Draft
-                </Button>
-              </div>
-              <div className="w-full sm:w-1/2 md:w-1/3 my-1 sm:my-1 md:my-0 px-1">
-                <Button
-                  outlined={1}
-                  size="sm"
-                  block={1}
-                  danger={1}
-                  onClick={() => saveAs("Unpaid")}
-                >
-                  <DollarIcon className="h-5 w-5 mr-1" /> Save As Unpaid
-                </Button>
-              </div>
-              <div className="w-full sm:w-1/2 md:w-1/3 my-1 sm:my-1 md:my-0 px-1">
+            <div className="flex flex-col flex-wrap sm:flex-row">
+              {params.id === "new" && (
+                <div className="w-full flex-1 my-1 sm:my-1 md:my-0 px-1">
+                  <Button
+                    outlined={1}
+                    size="sm"
+                    block={1}
+                    secondary={1}
+                    onClick={() => saveAs("Draft")}
+                  >
+                    <CheckCircleIcon className="h-5 w-5 mr-1" /> Save As Draft
+                  </Button>
+                </div>
+              )}
+              {invoiceForm?.statusIndex !== "2" && (
+                <div className="w-full flex-1 my-1 sm:my-1 md:my-0 px-1">
+                  <Button
+                    outlined={1}
+                    size="sm"
+                    block={1}
+                    danger={1}
+                    onClick={() => saveAs("Unpaid")}
+                  >
+                    <DollarIcon className="h-5 w-5 mr-1" />{" "}
+                    {params.id === "new" ? "Save" : "Update"} As Unpaid
+                  </Button>
+                </div>
+              )}
+              <div className="w-full flex-1 my-1 sm:my-1 md:my-0 px-1">
                 <Button
                   size="sm"
                   block={1}
                   success={1}
                   onClick={() => saveAs("Paid")}
                 >
-                  <SecurityIcon className="h-5 w-5 mr-1" /> Save As Paid
+                  <SecurityIcon className="h-5 w-5 mr-1" />{" "}
+                  {params.id === "new" ? "Save" : "Update"} As Paid
                 </Button>
               </div>
             </div>
@@ -1455,6 +1416,7 @@ function InvoiceDetailScreen(props) {
       {invoiceForm && (
         <div className="p-4">
           <InvoiceTopBar
+            onClickBack={goInvoiceList}
             viewMode={isViewMode}
             onClickViewAs={toggleViewMode}
             onClickSetting={openSettingModal}

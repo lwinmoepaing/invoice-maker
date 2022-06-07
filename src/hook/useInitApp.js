@@ -17,7 +17,11 @@ import {
 import { useAppContext } from "../context/AppContext";
 import { updateNewClientForm, setAllClients } from "../store/clientSlice";
 import { updateCompanyData } from "../store/companySlice";
-import { setAllInvoice, updateNewInvoiceForm } from "../store/invoiceSlice";
+import {
+  setAllInvoice,
+  setAllInvoiceDetailList,
+  updateNewInvoiceForm,
+} from "../store/invoiceSlice";
 import { setAllProducts, updateNewProductForm } from "../store/productSlice";
 
 const useInitApp = () => {
@@ -70,11 +74,16 @@ const useInitApp = () => {
         dispatch(setAllProducts(products));
       }
 
+      if (invoiceNewForm) {
+        dispatch(updateNewInvoiceForm(invoiceNewForm));
+      }
+
       if (invoices) {
         dispatch(setAllInvoice(invoices));
       }
 
       if (invoiceDetailList) {
+        dispatch(setAllInvoiceDetailList(invoiceDetailList));
       }
 
       if (defaultColor) {
@@ -83,9 +92,7 @@ const useInitApp = () => {
       if (defaultBackground) {
       }
 
-      if (invoiceNewForm) {
-        dispatch(updateNewInvoiceForm(invoiceNewForm));
-      }
+
     } catch (e) {
       console.log(e);
     } finally {
