@@ -78,7 +78,7 @@ export const productSlice = createSlice({
         state.data[isFindIndex] = { ...action.payload };
       }
       state.editedID = null;
-      localforage.setItem(PRODUCTS_KEY, [...state.data]);
+      localforage.setItem(PRODUCTS_KEY, [...state.data.map(product => JSON.parse(JSON.stringify(product)))]);
     },
 
     setOpenProductSelector: (state, action) => {
